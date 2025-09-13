@@ -1,0 +1,425 @@
+# FORTIS - Sistema de Votação Eletrônica Brasileiro
+# .gitignore
+
+# ===========================================
+# RUST (Backend)
+# ===========================================
+# Cargo
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Rust build artifacts
+*.pdb
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Rust IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===========================================
+# NODE.JS (Frontend)
+# ===========================================
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# ===========================================
+# REACT NATIVE (Mobile)
+# ===========================================
+# React Native
+.expo/
+.expo-shared/
+
+# Xcode
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace
+
+# Android/IntelliJ
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+
+# ===========================================
+# BLOCKCHAIN / SOLIDITY
+# ===========================================
+# Hardhat
+cache/
+artifacts/
+typechain/
+typechain-types/
+
+# Solidity
+*.sol.bak
+
+# OpenZeppelin
+node_modules/@openzeppelin/
+
+# ===========================================
+# DATABASE
+# ===========================================
+# PostgreSQL
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+
+# Database dumps
+*.dump
+*.sql.gz
+
+# ===========================================
+# DOCKER
+# ===========================================
+# Docker
+.dockerignore
+Dockerfile.dev
+docker-compose.override.yml
+
+# ===========================================
+# KUBERNETES
+# ===========================================
+# Kubernetes secrets
+k8s/secrets/
+*.secret.yaml
+*.secret.yml
+
+# Helm
+charts/*/charts/
+charts/*/requirements.lock
+
+# ===========================================
+# MONITORING & LOGS
+# ===========================================
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Prometheus
+prometheus_data/
+
+# Grafana
+grafana_data/
+
+# ELK Stack
+elasticsearch_data/
+logstash_data/
+kibana_data/
+
+# ===========================================
+# SECURITY & SECRETS
+# ===========================================
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Vault
+vault_data/
+
+# ===========================================
+# IDE & EDITORS
+# ===========================================
+# VSCode
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===========================================
+# OPERATING SYSTEM
+# ===========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===========================================
+# TESTING
+# ===========================================
+# Test coverage
+coverage/
+.nyc_output/
+.coverage
+htmlcov/
+
+# Test results
+test-results/
+junit.xml
+test-report.xml
+
+# ===========================================
+# BUILD & DEPLOY
+# ===========================================
+# Build outputs
+build/
+dist/
+out/
+target/
+
+# Deploy
+deploy/
+deployment/
+
+# ===========================================
+# DOCUMENTATION
+# ===========================================
+# Generated docs
+docs/build/
+docs/_build/
+
+# ===========================================
+# MISC
+# ===========================================
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+*.tmp
+*.temp
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ===========================================
+# FORTIS SPECIFIC
+# ===========================================
+# Election data (sensitive)
+election_data/
+voter_data/
+vote_data/
+
+# Audit logs (sensitive)
+audit_logs/
+audit_data/
+
+# Blockchain private keys
+private_keys/
+wallets/
+*.wallet
+
+# TSE integration data
+tse_data/
+govbr_data/
+
+# Urna data
+urna_data/
+urna_logs/
+
+# Performance test data
+load_test_data/
+performance_logs/
+
+# Security test data
+security_test_data/
+penetration_test_results/
+
+# Compliance data
+compliance_data/
+lgpd_data/
+
+# AI model data
+ai_models/
+ml_data/
+training_data/
+
+# Backup and recovery
+backups/
+recovery_data/
+
+# Monitoring data
+monitoring_data/
+metrics_data/
+
+# ===========================================
+# END OF .gitignore
+# ===========================================

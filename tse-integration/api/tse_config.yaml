@@ -1,0 +1,171 @@
+# Configuração da API TSE
+# Arquivo de configuração para integração com o Tribunal Superior Eleitoral
+
+tse:
+  # URLs da API TSE
+  base_url: "https://api.tse.jus.br"
+  api_version: "v1"
+  timeout: 30
+  retry_attempts: 3
+  
+  # Configurações de autenticação
+  authentication:
+    api_key: "${TSE_API_KEY}"
+    client_certificate: "${TSE_CLIENT_CERT}"
+    client_key: "${TSE_CLIENT_KEY}"
+    ca_certificate: "${TSE_CA_CERT}"
+  
+  # Endpoints da API
+  endpoints:
+    voter_validation: "/eleitores/validar"
+    voter_data: "/eleitores/dados"
+    elections: "/eleicoes"
+    candidates: "/candidatos"
+    polling_stations: "/secoes"
+    results: "/resultados"
+    zones: "/zonas"
+    rules: "/regras"
+    stats: "/estatisticas"
+    votes: "/votos"
+  
+  # Configurações de sincronização
+  sync:
+    interval: 3600  # segundos
+    batch_size: 100
+    max_retries: 3
+    timeout: 60
+  
+  # Configurações de cache
+  cache:
+    enabled: true
+    ttl: 1800  # segundos
+    max_size: 10000
+
+# Configuração Gov.br
+gov_br:
+  base_url: "https://sso.acesso.gov.br"
+  client_id: "${GOV_BR_CLIENT_ID}"
+  client_secret: "${GOV_BR_CLIENT_SECRET}"
+  redirect_uri: "${GOV_BR_REDIRECT_URI}"
+  scope: "openid profile cpf"
+  
+  # Endpoints Gov.br
+  endpoints:
+    authorize: "/authorize"
+    token: "/token"
+    userinfo: "/userinfo"
+    tokeninfo: "/tokeninfo"
+    revoke: "/revoke"
+    jwks: "/.well-known/jwks.json"
+
+# Configuração de certificados digitais
+certificates:
+  # Certificados raiz da ICP-Brasil
+  root_ca:
+    - "AC_Raiz_v2.crt"
+    - "AC_Raiz_v5.crt"
+  
+  # Certificados intermediários
+  intermediate_ca:
+    - "AC_Serasa_v5.crt"
+    - "AC_Serasa_v2.crt"
+    - "AC_Valid_v5.crt"
+    - "AC_Valid_v2.crt"
+    - "AC_AC_Serasa_v5.crt"
+    - "AC_AC_Valid_v5.crt"
+  
+  # Configurações OCSP
+  ocsp:
+    responder_url: "http://ocsp.icpbrasil.gov.br/"
+    timeout: 10
+    retry_attempts: 3
+  
+  # Validação de certificados
+  validation:
+    check_revocation: true
+    check_chain: true
+    check_expiry: true
+    warn_before_expiry: 30  # dias
+
+# Configuração de logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "/var/log/fortis/tse-integration.log"
+  max_size: "10MB"
+  backup_count: 5
+
+# Configuração de monitoramento
+monitoring:
+  enabled: true
+  metrics_endpoint: "/metrics"
+  health_check_endpoint: "/health"
+  prometheus:
+    enabled: true
+    port: 9090
+  
+  # Métricas personalizadas
+  metrics:
+    - name: "tse_requests_total"
+      type: "counter"
+      help: "Total de requisições para TSE"
+    - name: "tse_errors_total"
+      type: "counter"
+      help: "Total de erros na API TSE"
+    - name: "voter_validations_total"
+      type: "counter"
+      help: "Total de validações de eleitores"
+    - name: "certificate_validations_total"
+      type: "counter"
+      help: "Total de validações de certificados"
+    - name: "sync_duration_seconds"
+      type: "histogram"
+      help: "Duração das sincronizações"
+
+# Configuração de segurança
+security:
+  # Criptografia
+  encryption:
+    algorithm: "AES-256-GCM"
+    key_size: 256
+  
+  # Assinatura digital
+  digital_signature:
+    algorithm: "RSA-SHA256"
+    key_size: 2048
+  
+  # Validação de dados
+  validation:
+    cpf_validation: true
+    voter_id_validation: true
+    certificate_validation: true
+    biometric_validation: true
+  
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst_size: 20
+
+# Configuração de ambiente
+environment:
+  # Desenvolvimento
+  development:
+    tse_base_url: "https://api-dev.tse.jus.br"
+    gov_br_base_url: "https://sso-dev.acesso.gov.br"
+    debug: true
+    log_level: "DEBUG"
+  
+  # Homologação
+  staging:
+    tse_base_url: "https://api-staging.tse.jus.br"
+    gov_br_base_url: "https://sso-staging.acesso.gov.br"
+    debug: false
+    log_level: "INFO"
+  
+  # Produção
+  production:
+    tse_base_url: "https://api.tse.jus.br"
+    gov_br_base_url: "https://sso.acesso.gov.br"
+    debug: false
+    log_level: "WARNING"

@@ -1,0 +1,394 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fortis-postgres-pvc
+  namespace: fortis
+  labels:
+    app: fortis-postgres
+    component: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fortis-postgres
+  namespace: fortis
+  labels:
+    app: fortis-postgres
+    component: database
+spec:
+  serviceName: fortis-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fortis-postgres
+  template:
+    metadata:
+      labels:
+        app: fortis-postgres
+        component: database
+    spec:
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: fortis-database-secret
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: fortis-database-secret
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fortis-database-secret
+              key: postgres-password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        - name: postgres-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+        - name: postgres-init
+          mountPath: /docker-entrypoint-initdb.d
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - fortis_user
+            - -d
+            - fortis_voting
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - fortis_user
+            - -d
+            - fortis_voting
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: fortis-postgres-pvc
+      - name: postgres-config
+        configMap:
+          name: fortis-postgres-config
+      - name: postgres-init
+        configMap:
+          name: fortis-postgres-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fortis-postgres
+  namespace: fortis
+  labels:
+    app: fortis-postgres
+    component: database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: fortis-postgres
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortis-postgres-config
+  namespace: fortis
+  labels:
+    app: fortis-postgres
+    component: config
+data:
+  postgresql.conf: |
+    # Connection Settings
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 200
+    superuser_reserved_connections = 3
+    
+    # Memory Settings
+    shared_buffers = 1GB
+    effective_cache_size = 3GB
+    work_mem = 4MB
+    maintenance_work_mem = 256MB
+    
+    # Checkpoint Settings
+    checkpoint_completion_target = 0.9
+    wal_buffers = 16MB
+    default_statistics_target = 100
+    
+    # Logging Settings
+    log_destination = 'stderr'
+    logging_collector = on
+    log_directory = '/var/log/postgresql'
+    log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
+    log_rotation_age = 1d
+    log_rotation_size = 100MB
+    log_min_duration_statement = 1000
+    log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    log_checkpoints = on
+    log_connections = on
+    log_disconnections = on
+    log_lock_waits = on
+    log_temp_files = 0
+    
+    # Security Settings
+    ssl = on
+    ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+    ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+    password_encryption = scram-sha-256
+    
+    # Performance Settings
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    max_worker_processes = 8
+    max_parallel_workers_per_gather = 4
+    max_parallel_workers = 8
+    max_parallel_maintenance_workers = 4
+    
+    # Autovacuum Settings
+    autovacuum = on
+    autovacuum_max_workers = 3
+    autovacuum_naptime = 1min
+    autovacuum_vacuum_threshold = 50
+    autovacuum_analyze_threshold = 50
+    autovacuum_vacuum_scale_factor = 0.1
+    autovacuum_analyze_scale_factor = 0.05
+    
+    # WAL Settings
+    wal_level = replica
+    max_wal_size = 1GB
+    min_wal_size = 80MB
+    checkpoint_timeout = 5min
+    archive_mode = on
+    archive_command = 'test ! -f /backup/%f && cp %p /backup/%f'
+    
+    # Replication Settings
+    hot_standby = on
+    max_standby_streaming_delay = 30s
+    max_standby_archive_delay = 30s
+    wal_receiver_timeout = 60s
+    wal_retrieve_retry_interval = 5s
+    
+    # Query Settings
+    default_transaction_isolation = 'read committed'
+    statement_timeout = 0
+    lock_timeout = 0
+    idle_in_transaction_session_timeout = 0
+    
+    # Locale Settings
+    lc_messages = 'en_US.utf8'
+    lc_monetary = 'en_US.utf8'
+    lc_numeric = 'en_US.utf8'
+    lc_time = 'en_US.utf8'
+    default_text_search_config = 'pg_catalog.english'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortis-postgres-init
+  namespace: fortis
+  labels:
+    app: fortis-postgres
+    component: init
+data:
+  01-init-database.sql: |
+    -- Create extensions
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
+    CREATE EXTENSION IF NOT EXISTS "timescaledb";
+    
+    -- Create schemas
+    CREATE SCHEMA IF NOT EXISTS voting;
+    CREATE SCHEMA IF NOT EXISTS audit;
+    CREATE SCHEMA IF NOT EXISTS tse;
+    CREATE SCHEMA IF NOT EXISTS blockchain;
+    
+    -- Create users
+    CREATE USER fortis_readonly WITH PASSWORD 'fortis_readonly_password';
+    CREATE USER fortis_app WITH PASSWORD 'fortis_app_password';
+    CREATE USER fortis_audit WITH PASSWORD 'fortis_audit_password';
+    
+    -- Grant permissions
+    GRANT USAGE ON SCHEMA voting TO fortis_app;
+    GRANT USAGE ON SCHEMA audit TO fortis_audit;
+    GRANT USAGE ON SCHEMA tse TO fortis_app;
+    GRANT USAGE ON SCHEMA blockchain TO fortis_app;
+    
+    GRANT SELECT ON ALL TABLES IN SCHEMA voting TO fortis_readonly;
+    GRANT SELECT ON ALL TABLES IN SCHEMA audit TO fortis_readonly;
+    GRANT SELECT ON ALL TABLES IN SCHEMA tse TO fortis_readonly;
+    GRANT SELECT ON ALL TABLES IN SCHEMA blockchain TO fortis_readonly;
+    
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA voting TO fortis_app;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA tse TO fortis_app;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA blockchain TO fortis_app;
+    
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA audit TO fortis_audit;
+    
+    -- Create tables
+    CREATE TABLE IF NOT EXISTS voting.elections (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+        end_date TIMESTAMP WITH TIME ZONE NOT NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'draft',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    CREATE TABLE IF NOT EXISTS voting.candidates (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        election_id UUID NOT NULL REFERENCES voting.elections(id),
+        name VARCHAR(255) NOT NULL,
+        party VARCHAR(100),
+        number INTEGER,
+        bio TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    CREATE TABLE IF NOT EXISTS voting.votes (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        election_id UUID NOT NULL REFERENCES voting.elections(id),
+        candidate_id UUID NOT NULL REFERENCES voting.candidates(id),
+        voter_cpf VARCHAR(11) NOT NULL,
+        encrypted_vote TEXT NOT NULL,
+        vote_hash VARCHAR(255) NOT NULL,
+        zkp_proof TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        UNIQUE(election_id, voter_cpf)
+    );
+    
+    CREATE TABLE IF NOT EXISTS audit.audit_logs (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        event_type VARCHAR(100) NOT NULL,
+        entity_type VARCHAR(100) NOT NULL,
+        entity_id UUID NOT NULL,
+        user_id UUID,
+        action VARCHAR(100) NOT NULL,
+        old_values JSONB,
+        new_values JSONB,
+        ip_address INET,
+        user_agent TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    CREATE TABLE IF NOT EXISTS tse.voters (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        cpf VARCHAR(11) UNIQUE NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        birth_date DATE NOT NULL,
+        voter_id VARCHAR(20) UNIQUE NOT NULL,
+        zone VARCHAR(10) NOT NULL,
+        section VARCHAR(10) NOT NULL,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    CREATE TABLE IF NOT EXISTS blockchain.transactions (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        tx_hash VARCHAR(66) UNIQUE NOT NULL,
+        block_number BIGINT NOT NULL,
+        block_hash VARCHAR(66) NOT NULL,
+        from_address VARCHAR(42) NOT NULL,
+        to_address VARCHAR(42) NOT NULL,
+        value NUMERIC(78, 0) DEFAULT 0,
+        gas_used BIGINT NOT NULL,
+        gas_price NUMERIC(78, 0) NOT NULL,
+        status VARCHAR(20) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+    
+    -- Create indexes
+    CREATE INDEX IF NOT EXISTS idx_votes_election_id ON voting.votes(election_id);
+    CREATE INDEX IF NOT EXISTS idx_votes_voter_cpf ON voting.votes(voter_cpf);
+    CREATE INDEX IF NOT EXISTS idx_votes_candidate_id ON voting.votes(candidate_id);
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_entity ON audit.audit_logs(entity_type, entity_id);
+    CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit.audit_logs(created_at);
+    CREATE INDEX IF NOT EXISTS idx_voters_cpf ON tse.voters(cpf);
+    CREATE INDEX IF NOT EXISTS idx_voters_zone_section ON tse.voters(zone, section);
+    CREATE INDEX IF NOT EXISTS idx_transactions_tx_hash ON blockchain.transactions(tx_hash);
+    CREATE INDEX IF NOT EXISTS idx_transactions_block_number ON blockchain.transactions(block_number);
+    
+    -- Create functions
+    CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+    END;
+    $$ language 'plpgsql';
+    
+    -- Create triggers
+    CREATE TRIGGER update_elections_updated_at BEFORE UPDATE ON voting.elections
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    
+    CREATE TRIGGER update_candidates_updated_at BEFORE UPDATE ON voting.candidates
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    
+    CREATE TRIGGER update_voters_updated_at BEFORE UPDATE ON tse.voters
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    
+    -- Insert sample data
+    INSERT INTO voting.elections (name, description, start_date, end_date, status) VALUES
+    ('Eleição Presidencial 2025', 'Eleição para Presidente da República', '2025-10-06 08:00:00+00', '2025-10-06 17:00:00+00', 'draft'),
+    ('Eleição Estadual 2025', 'Eleição para Governador', '2025-10-06 08:00:00+00', '2025-10-06 17:00:00+00', 'draft')
+    ON CONFLICT DO NOTHING;
+    
+    INSERT INTO voting.candidates (election_id, name, party, number, bio) VALUES
+    ((SELECT id FROM voting.elections WHERE name = 'Eleição Presidencial 2025'), 'Candidato A', 'Partido A', 10, 'Biografia do Candidato A'),
+    ((SELECT id FROM voting.elections WHERE name = 'Eleição Presidencial 2025'), 'Candidato B', 'Partido B', 20, 'Biografia do Candidato B'),
+    ((SELECT id FROM voting.elections WHERE name = 'Eleição Presidencial 2025'), 'Candidato C', 'Partido C', 30, 'Biografia do Candidato C')
+    ON CONFLICT DO NOTHING;

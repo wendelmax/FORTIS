@@ -1,0 +1,120 @@
+# FORTIS - Configuração do Ollama
+# Configuração para integração com modelos LLM locais
+
+# Configuração do servidor Ollama
+ollama:
+  base_url: "http://localhost:11434"
+  timeout: 30
+  max_retries: 3
+  retry_delay: 1
+
+# Modelos recomendados para eleições
+models:
+  # Modelo principal para análise de texto
+  primary:
+    name: "llama3.2:3b"
+    description: "Modelo principal para análise de texto eleitoral"
+    parameters:
+      temperature: 0.7
+      max_tokens: 2048
+      top_p: 0.9
+      frequency_penalty: 0.0
+      presence_penalty: 0.0
+
+  # Modelo para análise de sentimento
+  sentiment:
+    name: "llama3.2:3b"
+    description: "Modelo especializado em análise de sentimento"
+    parameters:
+      temperature: 0.3
+      max_tokens: 512
+      top_p: 0.8
+
+  # Modelo para geração de relatórios
+  report:
+    name: "llama3.2:3b"
+    description: "Modelo para geração de relatórios eleitorais"
+    parameters:
+      temperature: 0.5
+      max_tokens: 4096
+      top_p: 0.9
+
+  # Modelo para extração de entidades
+  entities:
+    name: "llama3.2:3b"
+    description: "Modelo para extração de entidades eleitorais"
+    parameters:
+      temperature: 0.2
+      max_tokens: 1024
+      top_p: 0.8
+
+# Configuração de cache
+cache:
+  enabled: true
+  max_size: 1000
+  ttl: 3600  # 1 hora em segundos
+
+# Configuração de logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/llm_service.log"
+
+# Configuração de monitoramento
+monitoring:
+  enabled: true
+  metrics_interval: 60  # segundos
+  health_check_interval: 30  # segundos
+  alert_thresholds:
+    error_rate: 0.1  # 10%
+    response_time: 5.0  # segundos
+    memory_usage: 0.8  # 80%
+
+# Configuração de segurança
+security:
+  validate_responses: true
+  sanitize_inputs: true
+  max_input_length: 10000
+  allowed_models: ["llama3.2:3b", "llama3.2:7b", "llama3.2:13b"]
+
+# Configuração de prompts
+prompts:
+  # Templates de prompts para diferentes tarefas
+  templates:
+    sentiment_analysis:
+      system: "Você é um analista especializado em eleições brasileiras. Analise o sentimento do texto e responda em JSON."
+      user: "Analise o sentimento do seguinte texto sobre eleições:\n\n{text}\n\nResponda com: {{'sentiment': 'POSITIVO/NEGATIVO/NEUTRO', 'confidence': 0.0-1.0, 'reasoning': 'explicação'}}"
+    
+    entity_extraction:
+      system: "Você é um especialista em extração de entidades eleitorais. Extraia informações relevantes do texto."
+      user: "Extraia entidades eleitorais do seguinte texto:\n\n{text}\n\nResponda com: {{'cpfs': [], 'candidatos': [], 'partidos': [], 'secoes': [], 'zonas': [], 'datas': []}}"
+    
+    issue_classification:
+      system: "Você é um especialista em sistemas eleitorais. Classifique problemas mencionados no texto."
+      user: "Classifique os problemas eleitorais no texto:\n\n{text}\n\nResponda com: {{'categories': ['TÉCNICO', 'LOGÍSTICO', 'SEGURANÇA', 'JURÍDICO', 'SOCIAL'], 'severity': 'BAIXA/MÉDIA/ALTA', 'description': 'resumo'}}"
+    
+    report_generation:
+      system: "Você é um analista eleitoral. Gere relatórios profissionais baseados em dados."
+      user: "Gere um relatório de eleição baseado nos dados:\n\n{data}\n\nInclua: resumo executivo, análise de participação, padrões identificados, recomendações e conclusões."
+    
+    insight_extraction:
+      system: "Você é um especialista em análise eleitoral. Extraia insights relevantes do texto."
+      user: "Extraia insights sobre eleições do texto:\n\n{text}\n\nIdentifique: temas principais, preocupações dos eleitores, sugestões de melhoria e padrões de comportamento."
+
+# Configuração de fallback
+fallback:
+  enabled: true
+  # Se o LLM falhar, usa análise local
+  local_analysis: true
+  # Se a análise local falhar, retorna resposta padrão
+  default_response:
+    sentiment: "NEUTRO"
+    confidence: 0.5
+    reasoning: "Análise não disponível"
+
+# Configuração de desenvolvimento
+development:
+  debug: false
+  mock_responses: false
+  test_mode: false
+  verbose_logging: false

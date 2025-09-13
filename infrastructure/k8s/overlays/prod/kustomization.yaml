@@ -1,0 +1,64 @@
+# FORTIS - Kustomization para Produção
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Base
+resources:
+  - ../../base
+
+# Namespace
+namespace: fortis-prod
+
+# Patches
+patchesStrategicMerge:
+  - backend-patch.yaml
+  - frontend-patch.yaml
+  - postgres-patch.yaml
+  - redis-patch.yaml
+  - monitoring-patch.yaml
+
+# ConfigMaps
+configMapGenerator:
+  - name: fortis-config
+    literals:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+      - DATABASE_MAX_CONNECTIONS=50
+      - REDIS_MAX_CONNECTIONS=20
+      - JWT_EXPIRATION=3600
+      - RATE_LIMIT_REQUESTS=1000
+      - RATE_LIMIT_WINDOW=60
+
+# Secrets
+secretGenerator:
+  - name: fortis-secrets
+    literals:
+      - DATABASE_URL=postgresql://fortis:${DB_PASSWORD}@postgres:5432/fortis_prod
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - TSE_CLIENT_ID=${TSE_CLIENT_ID}
+      - TSE_CLIENT_SECRET=${TSE_CLIENT_SECRET}
+      - TSE_API_KEY=${TSE_API_KEY}
+      - BLOCKCHAIN_PRIVATE_KEY=${BLOCKCHAIN_PRIVATE_KEY}
+    type: Opaque
+
+# Images
+images:
+  - name: fortis-backend
+    newTag: v1.0.0-prod
+  - name: fortis-frontend
+    newTag: v1.0.0-prod
+  - name: fortis-mobile
+    newTag: v1.0.0-prod
+
+# Common labels
+commonLabels:
+  environment: production
+  app.kubernetes.io/part-of: fortis
+  app.kubernetes.io/version: v1.0.0
+
+# Common annotations
+commonAnnotations:
+  managed-by: kustomize
+  deployed-at: "2025-12-19T00:00:00Z"

@@ -1,0 +1,11 @@
+cpf,nome,data_nascimento,municipio,estado,sexo,votou_ultima_eleicao
+12345678901,João Silva,1985-03-15,São Paulo,SP,M,1
+98765432109,Maria Santos,1990-07-22,Rio de Janeiro,RJ,F,1
+11122233344,Pedro Oliveira,1978-11-08,Belo Horizonte,MG,M,0
+55566677788,Ana Costa,1992-05-30,Salvador,BA,F,1
+99988877766,Carlos Ferreira,1980-12-12,Fortaleza,CE,M,1
+44455566677,Mariana Lima,1987-09-18,Recife,PE,F,0
+77788899900,Ricardo Souza,1975-04-25,Porto Alegre,RS,M,1
+33344455566,Juliana Rocha,1995-01-14,Curitiba,PR,F,1
+66677788899,Fernando Alves,1983-08-07,Manaus,AM,M,0
+22233344455,Patricia Mendes,1989-06-03,Belém,PA,F,1

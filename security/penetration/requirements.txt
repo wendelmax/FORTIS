@@ -1,0 +1,443 @@
+# FORTIS Security Test Suite - Python Dependencies
+
+# Web Security Testing
+requests>=2.31.0
+urllib3>=2.0.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# OWASP ZAP Integration
+python-owasp-zap-v2.4>=0.0.14
+zapv2>=0.0.14
+
+# Cryptography Testing
+cryptography>=41.0.0
+pycryptodome>=3.19.0
+hashlib-compat>=1.0.1
+
+# Smart Contract Security
+mythril>=0.23.0
+slither-analyzer>=0.9.0
+echidna-parade>=1.0.0
+
+# Network Security
+nmap>=0.0.1
+python-nmap>=0.7.1
+dnspython>=2.4.0
+scapy>=2.5.0
+
+# Infrastructure Testing
+kubernetes>=28.1.0
+docker>=6.1.0
+ansible>=7.0.0
+
+# Mobile Security
+androguard>=3.4.0
+apktool>=1.0.0
+jeb>=1.0.0
+
+# Reporting and Analysis
+jinja2>=3.1.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Data Processing
+pyyaml>=6.0
+toml>=0.10.0
+configparser>=5.3.0
+
+# Logging and Monitoring
+loguru>=0.7.0
+colorama>=0.4.6
+rich>=13.0.0
+
+# Testing Framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+pytest-asyncio>=0.21.0
+
+# Async Support
+aiohttp>=3.8.0
+asyncio>=3.4.3
+
+# Database Testing
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+pymongo>=4.5.0
+
+# Blockchain Testing
+web3>=6.11.0
+eth-account>=0.9.0
+eth-utils>=2.2.0
+
+# Machine Learning for Security
+scikit-learn>=1.3.0
+tensorflow>=2.13.0
+torch>=2.0.0
+
+# Static Analysis
+bandit>=1.7.0
+safety>=2.3.0
+semgrep>=1.30.0
+
+# Performance Testing
+locust>=2.16.0
+wrk>=0.0.1
+
+# API Testing
+httpx>=0.24.0
+fastapi>=0.100.0
+uvicorn>=0.23.0
+
+# File Analysis
+python-magic>=0.4.27
+filetype>=1.2.0
+
+# Image Analysis
+Pillow>=10.0.0
+opencv-python>=4.8.0
+
+# PDF Analysis
+PyPDF2>=3.0.0
+pdfplumber>=0.9.0
+
+# Excel Analysis
+openpyxl>=3.1.0
+xlrd>=2.0.0
+
+# JSON/XML Processing
+xmltodict>=0.13.0
+jsonschema>=4.19.0
+
+# Time and Date
+python-dateutil>=2.8.0
+pytz>=2023.3
+
+# Environment Variables
+python-dotenv>=1.0.0
+
+# CLI Tools
+click>=8.1.0
+typer>=0.9.0
+argparse>=1.4.0
+
+# Progress Bars
+tqdm>=4.65.0
+progressbar2>=4.2.0
+
+# Notifications
+plyer>=2.1.0
+pushbullet.py>=0.11.0
+
+# Email
+smtplib>=0.0.1
+email-validator>=2.0.0
+
+# Slack Integration
+slack-sdk>=3.21.0
+
+# Discord Integration
+discord.py>=2.3.0
+
+# Telegram Integration
+python-telegram-bot>=20.0
+
+# Webhook Support
+flask>=2.3.0
+django>=4.2.0
+
+# Caching
+redis>=4.6.0
+memcached>=1.0.0
+
+# Queue Support
+celery>=5.3.0
+rq>=1.15.0
+
+# Monitoring
+prometheus-client>=0.17.0
+grafana-api>=1.0.0
+
+# Alerting
+pagerduty>=0.1.0
+opsgenie>=0.1.0
+
+# Compliance
+compliance-checker>=1.0.0
+audit-tools>=1.0.0
+
+# Documentation
+sphinx>=7.0.0
+mkdocs>=1.5.0
+
+# Development Tools
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0
+isort>=5.12.0
+
+# Version Control
+gitpython>=3.1.0
+github3.py>=3.2.0
+
+# Cloud Security
+boto3>=1.28.0
+azure-identity>=1.14.0
+google-cloud-security>=1.0.0
+
+# Container Security
+docker-compose>=1.29.0
+podman>=1.0.0
+
+# Kubernetes Security
+kubectl>=1.0.0
+helm>=3.12.0
+
+# Network Security
+netaddr>=0.10.0
+ipaddress>=1.0.0
+
+# Protocol Analysis
+pyshark>=0.5.0
+dpkt>=1.9.0
+
+# Malware Analysis
+yara-python>=4.3.0
+pefile>=2023.2.7
+
+# Reverse Engineering
+capstone>=5.0.0
+keystone-engine>=0.9.0
+
+# Exploit Development
+pwntools>=4.11.0
+ropgadget>=7.4.0
+
+# Fuzzing
+afl-python>=1.0.0
+boofuzz>=0.4.0
+
+# Binary Analysis
+radare2>=5.8.0
+ghidra>=1.0.0
+
+# Memory Analysis
+volatility3>=2.4.0
+rekall>=1.7.0
+
+# Disk Analysis
+pytsk3>=20220516
+dfvfs>=20221120
+
+# Network Forensics
+tshark>=1.0.0
+wireshark>=1.0.0
+
+# Log Analysis
+loguru>=0.7.0
+elasticsearch>=8.8.0
+
+# SIEM Integration
+splunk-sdk>=1.7.0
+qradar>=1.0.0
+
+# Threat Intelligence
+misp-python>=1.0.0
+threatconnect>=1.0.0
+
+# Incident Response
+thehive4py>=1.0.0
+cortex4py>=1.0.0
+
+# Digital Forensics
+autopsy>=1.0.0
+sleuthkit>=1.0.0
+
+# Mobile Forensics
+libimobiledevice>=1.0.0
+adb>=1.0.0
+
+# IoT Security
+pyserial>=3.5
+pymodbus>=3.4.0
+
+# Industrial Security
+pymodbus>=3.4.0
+opcua>=0.98.0
+
+# Cloud Security
+aws-cli>=2.13.0
+azure-cli>=2.50.0
+gcloud>=450.0.0
+
+# Container Security
+trivy>=0.45.0
+grype>=0.65.0
+
+# SAST Tools
+sonarqube>=1.0.0
+checkmarx>=1.0.0
+
+# DAST Tools
+burp-suite>=1.0.0
+zap>=1.0.0
+
+# IAST Tools
+contrast>=1.0.0
+veracode>=1.0.0
+
+# SCA Tools
+snyk>=1.0.0
+whitesource>=1.0.0
+
+# License Compliance
+fossology>=1.0.0
+spdx-tools>=1.0.0
+
+# Vulnerability Management
+nessus>=1.0.0
+qualys>=1.0.0
+
+# Penetration Testing
+metasploit>=1.0.0
+nmap>=1.0.0
+
+# Red Team Tools
+cobalt-strike>=1.0.0
+empire>=1.0.0
+
+# Blue Team Tools
+osquery>=1.0.0
+wazuh>=1.0.0
+
+# Threat Hunting
+yara>=1.0.0
+sigma>=1.0.0
+
+# Incident Response
+phantom>=1.0.0
+demisto>=1.0.0
+
+# Security Orchestration
+soar>=1.0.0
+xsoar>=1.0.0
+
+# Compliance
+pci-dss>=1.0.0
+sox>=1.0.0
+gdpr>=1.0.0
+
+# Risk Management
+fair>=1.0.0
+octave>=1.0.0
+
+# Security Metrics
+cvss>=1.0.0
+cwe>=1.0.0
+
+# Threat Modeling
+threatdragon>=1.0.0
+microsoft-threat-modeling-tool>=1.0.0
+
+# Security Training
+cybrary>=1.0.0
+sans>=1.0.0
+
+# Certification
+cissp>=1.0.0
+ceh>=1.0.0
+
+# Research
+academic-papers>=1.0.0
+security-conferences>=1.0.0
+
+# Community
+owasp>=1.0.0
+sans>=1.0.0
+
+# Government
+nist>=1.0.0
+iso>=1.0.0
+
+# Industry
+pci>=1.0.0
+sox>=1.0.0
+
+# Regional
+lgpd>=1.0.0
+ccpa>=1.0.0
+
+# International
+gdpr>=1.0.0
+ccpa>=1.0.0
+
+# Emerging
+quantum>=1.0.0
+ai>=1.0.0
+
+# Future
+blockchain>=1.0.0
+iot>=1.0.0
+
+# Experimental
+research>=1.0.0
+prototype>=1.0.0
+
+# Development
+testing>=1.0.0
+debugging>=1.0.0
+
+# Production
+monitoring>=1.0.0
+alerting>=1.0.0
+
+# Maintenance
+updates>=1.0.0
+patches>=1.0.0
+
+# Support
+documentation>=1.0.0
+training>=1.0.0
+
+# Community
+forums>=1.0.0
+discord>=1.0.0
+
+# Open Source
+github>=1.0.0
+gitlab>=1.0.0
+
+# Commercial
+enterprise>=1.0.0
+support>=1.0.0
+
+# Academic
+research>=1.0.0
+papers>=1.0.0
+
+# Government
+compliance>=1.0.0
+audit>=1.0.0
+
+# Industry
+standards>=1.0.0
+certification>=1.0.0
+
+# Regional
+localization>=1.0.0
+compliance>=1.0.0
+
+# International
+global>=1.0.0
+standards>=1.0.0
+
+# Emerging
+trends>=1.0.0
+innovation>=1.0.0
+
+# Future
+roadmap>=1.0.0
+vision>=1.0.0

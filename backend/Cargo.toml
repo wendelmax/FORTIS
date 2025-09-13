@@ -1,0 +1,111 @@
+[package]
+name = "fortis-backend"
+version = "0.1.0"
+edition = "2021"
+authors = ["FORTIS Development Team <dev@fortis.gov.br>"]
+description = "FORTIS - Sistema de Votação Eletrônica Brasileiro - Backend"
+license = "MIT"
+repository = "https://github.com/fortis-gov/fortis"
+keywords = ["voting", "election", "blockchain", "security", "brazil"]
+categories = ["authentication", "cryptography", "web-programming"]
+
+[dependencies]
+# Web Framework
+actix-web = "4.4"
+actix-cors = "0.6"
+actix-rt = "2.8"
+
+# OpenAPI/Swagger Documentation
+utoipa = { version = "4.2", features = ["actix_extras", "chrono", "uuid"] }
+utoipa-swagger-ui = { version = "6.0", features = ["actix-web"] }
+
+# Async Runtime
+tokio = { version = "1.0", features = ["full"] }
+futures = "0.3"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+
+# Database
+sqlx = { version = "0.7", features = ["postgres", "runtime-tokio-rustls", "migrate", "chrono", "uuid"] }
+tokio-postgres = "0.7"
+
+# Caching
+redis = { version = "0.23", features = ["tokio-comp"] }
+
+# Cryptography
+ring = "0.17"
+aes-gcm = "0.10"
+rsa = "0.9"
+argon2 = "0.5"
+sha2 = "0.10"
+sha3 = "0.10"
+hmac = "0.12"
+pbkdf2 = "0.12"
+
+# JWT
+jsonwebtoken = "9.2"
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
+# Environment
+dotenv = "0.15"
+config = "0.13"
+
+# Logging
+log = "0.4"
+env_logger = "0.10"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# Error Handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Validation
+validator = { version = "0.16", features = ["derive"] }
+
+# HTTP Client
+reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+
+# Blockchain
+web3 = "0.19"
+ethers = "2.0"
+
+# Zero-Knowledge Proofs (simplified for now)
+# ark-ff = "0.4"
+# ark-ec = "0.4"
+# ark-poly = "0.4"
+# ark-relations = "0.4"
+# ark-serialize = "0.4"
+# ark-std = "0.4"
+
+# Utilities
+base64 = "0.21"
+hex = "0.4"
+url = "2.4"
+regex = "1.10"
+rand = "0.8"
+blake3 = "1.5"
+
+# Testing
+tokio-test = "0.4"
+
+[dev-dependencies]
+tokio-test = "0.4"
+mockito = "1.0"
+tempfile = "3.8"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true

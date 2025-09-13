@@ -1,0 +1,70 @@
+{
+  "network": "mumbai",
+  "chainId": 80001,
+  "deployer": "0x0000000000000000000000000000000000000000",
+  "deploymentDate": "2025-12-19T00:00:00.000Z",
+  "contracts": {
+    "FortisToken": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "blockNumber": 0,
+      "gasUsed": 0,
+      "verified": false
+    },
+    "TimelockController": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "blockNumber": 0,
+      "gasUsed": 0,
+      "verified": false
+    },
+    "FortisGovernance": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "blockNumber": 0,
+      "gasUsed": 0,
+      "verified": false
+    },
+    "FortisVoting": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "blockNumber": 0,
+      "gasUsed": 0,
+      "verified": false
+    },
+    "FortisAudit": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "blockNumber": 0,
+      "gasUsed": 0,
+      "verified": false
+    },
+    "FortisIdentity": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "transactionHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "blockNumber": 0,
+      "gasUsed": 0,
+      "verified": false
+    }
+  },
+  "roles": {
+    "ADMIN_ROLE": "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775",
+    "MINISTER_ROLE": "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6",
+    "AUDITOR_ROLE": "0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a",
+    "NODE_ROLE": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+  },
+  "configuration": {
+    "minDelay": 3600,
+    "quorumPercentage": 4,
+    "votingDelay": 1,
+    "votingPeriod": 17280,
+    "proposalThreshold": "1000000000000000000000"
+  },
+  "notes": [
+    "Deployment para testes - Mumbai testnet",
+    "Endereços serão atualizados após deploy de teste",
+    "Verificação de contratos será feita após deploy",
+    "Configuração de roles será ajustada conforme necessário",
+    "Rede de teste para validação antes do deploy em mainnet"
+  ]
+}

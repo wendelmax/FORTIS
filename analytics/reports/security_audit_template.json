@@ -1,0 +1,102 @@
+{
+  "security_audit_report": {
+    "metadata": {
+      "report_id": "{report_id}",
+      "election_id": "{election_id}",
+      "generated_at": "{generation_date}",
+      "auditor": "FORTIS Security System",
+      "version": "1.0"
+    },
+    "executive_summary": {
+      "total_votes_analyzed": 0,
+      "security_score": 0.0,
+      "anomalies_detected": 0,
+      "threat_level": "low",
+      "overall_status": "secure"
+    },
+    "anomaly_analysis": {
+      "temporal_anomalies": {
+        "count": 0,
+        "description": "Votos em horários suspeitos",
+        "examples": []
+      },
+      "geographic_anomalies": {
+        "count": 0,
+        "description": "Concentração anômala de votos",
+        "affected_zones": []
+      },
+      "duplicate_votes": {
+        "count": 0,
+        "description": "Múltiplos votos do mesmo eleitor",
+        "voter_cpfs": []
+      },
+      "verification_anomalies": {
+        "count": 0,
+        "description": "Votos não verificados",
+        "verification_rate": 0.0
+      },
+      "other_anomalies": {
+        "count": 0,
+        "description": "Outros padrões suspeitos",
+        "details": []
+      }
+    },
+    "security_metrics": {
+      "verification_rate": 0.0,
+      "audit_rate": 0.0,
+      "encryption_strength": "AES-256",
+      "blockchain_integrity": true,
+      "access_control_score": 0.0,
+      "data_integrity_score": 0.0
+    },
+    "threat_assessment": {
+      "internal_threats": {
+        "level": "low",
+        "indicators": [],
+        "mitigation": []
+      },
+      "external_threats": {
+        "level": "low",
+        "indicators": [],
+        "mitigation": []
+      },
+      "system_vulnerabilities": {
+        "level": "low",
+        "vulnerabilities": [],
+        "patches_applied": []
+      }
+    },
+    "compliance_check": {
+      "lgpd_compliance": true,
+      "tse_standards": true,
+      "iso27001_compliance": true,
+      "audit_trail_complete": true,
+      "data_retention_compliant": true
+    },
+    "recommendations": {
+      "immediate_actions": [],
+      "short_term_improvements": [],
+      "long_term_strategies": [],
+      "security_updates": []
+    },
+    "detailed_findings": {
+      "suspicious_activities": [],
+      "failed_verifications": [],
+      "access_violations": [],
+      "data_inconsistencies": []
+    },
+    "technical_details": {
+      "analysis_algorithm": "Isolation Forest + DBSCAN",
+      "feature_engineering": "Temporal, Geographic, Behavioral",
+      "confidence_threshold": 0.95,
+      "false_positive_rate": 0.02,
+      "processing_time": "0.0s"
+    },
+    "next_steps": {
+      "immediate_investigation": [],
+      "monitoring_requirements": [],
+      "reporting_obligations": [],
+      "follow_up_audit": "{follow_up_date}"
+    }
+  }
+}

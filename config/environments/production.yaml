@@ -1,0 +1,246 @@
+# FORTIS Production Environment Configuration
+
+# Database Configuration
+database:
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  name: ${DB_NAME}
+  username: ${DB_USERNAME}
+  password: ${DB_PASSWORD}
+  ssl_mode: require
+  max_connections: 100
+  connection_timeout: 30s
+  idle_timeout: 300s
+
+# Redis Configuration
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+  password: ${REDIS_PASSWORD}
+  db: 0
+  max_connections: 50
+  connection_timeout: 5s
+  command_timeout: 5s
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET}
+  algorithm: HS256
+  access_token_expiry: 15m
+  refresh_token_expiry: 7d
+  issuer: fortis.gov.br
+  audience: fortis-voters
+
+# TSE Integration
+tse:
+  api_url: https://api.tse.jus.br
+  api_key: ${TSE_API_KEY}
+  timeout: 30s
+  retry_attempts: 3
+  retry_delay: 1s
+
+# Blockchain Configuration
+blockchain:
+  network: polygon
+  rpc_url: ${POLYGON_RPC_URL}
+  private_key: ${POLYGON_PRIVATE_KEY}
+  gas_limit: 1000000
+  gas_price: 20000000000
+  contract_addresses:
+    voting: ${VOTING_CONTRACT_ADDRESS}
+    audit: ${AUDIT_CONTRACT_ADDRESS}
+    identity: ${IDENTITY_CONTRACT_ADDRESS}
+    token: ${TOKEN_CONTRACT_ADDRESS}
+
+# Security Configuration
+security:
+  encryption_key: ${ENCRYPTION_KEY}
+  hash_algorithm: argon2
+  hash_memory: 65536
+  hash_iterations: 3
+  hash_parallelism: 4
+  hash_length: 32
+  salt_length: 16
+
+# Rate Limiting
+rate_limiting:
+  enabled: true
+  requests_per_minute: 60
+  burst_size: 10
+  window_size: 60s
+
+# CORS Configuration
+cors:
+  allowed_origins:
+    - https://fortis.gov.br
+    - https://www.fortis.gov.br
+    - https://votacao.fortis.gov.br
+  allowed_methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed_headers:
+    - Content-Type
+    - Authorization
+    - X-Requested-With
+  allow_credentials: true
+  max_age: 86400
+
+# Logging Configuration
+logging:
+  level: info
+  format: json
+  output: stdout
+  file:
+    enabled: true
+    path: /var/log/fortis/application.log
+    max_size: 100MB
+    max_files: 10
+    compress: true
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  metrics_endpoint: /metrics
+  health_check_endpoint: /health
+  prometheus:
+    enabled: true
+    port: 9090
+  grafana:
+    enabled: true
+    port: 3000
+
+# Backup Configuration
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  storage:
+    type: s3
+    bucket: fortis-backups
+    region: us-east-1
+    access_key: ${AWS_ACCESS_KEY}
+    secret_key: ${AWS_SECRET_KEY}
+
+# Email Configuration
+email:
+  provider: ses
+  region: us-east-1
+  access_key: ${AWS_ACCESS_KEY}
+  secret_key: ${AWS_SECRET_KEY}
+  from_address: noreply@fortis.gov.br
+  templates:
+    welcome: templates/welcome.html
+    notification: templates/notification.html
+    alert: templates/alert.html
+
+# SMS Configuration
+sms:
+  provider: aws_sns
+  region: us-east-1
+  access_key: ${AWS_ACCESS_KEY}
+  secret_key: ${AWS_SECRET_KEY}
+  sender_id: FORTIS
+
+# File Storage Configuration
+storage:
+  type: s3
+  bucket: fortis-storage
+  region: us-east-1
+  access_key: ${AWS_ACCESS_KEY}
+  secret_key: ${AWS_SECRET_KEY}
+  cdn:
+    enabled: true
+    domain: cdn.fortis.gov.br
+
+# Cache Configuration
+cache:
+  type: redis
+  ttl: 3600s
+  max_size: 1000
+  eviction_policy: lru
+
+# Session Configuration
+session:
+  type: redis
+  ttl: 1800s
+  secure: true
+  http_only: true
+  same_site: strict
+
+# API Configuration
+api:
+  version: v1
+  base_path: /api/v1
+  timeout: 30s
+  max_request_size: 10MB
+  compression:
+    enabled: true
+    level: 6
+
+# Feature Flags
+features:
+  biometric_auth: true
+  blockchain_voting: true
+  ai_fraud_detection: true
+  real_time_analytics: true
+  mobile_app: true
+  offline_voting: false
+  voice_voting: false
+
+# Performance Configuration
+performance:
+  max_concurrent_requests: 1000
+  request_timeout: 30s
+  keep_alive_timeout: 5s
+  tcp_keep_alive: true
+  tcp_keep_alive_interval: 30s
+
+# Health Check Configuration
+health_check:
+  enabled: true
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  checks:
+    database: true
+    redis: true
+    blockchain: true
+    tse_api: true
+    storage: true
+
+# Alerting Configuration
+alerting:
+  enabled: true
+  webhook_url: ${ALERT_WEBHOOK_URL}
+  channels:
+    - email
+    - sms
+    - slack
+  thresholds:
+    error_rate: 5%
+    response_time: 1000ms
+    memory_usage: 80%
+    cpu_usage: 80%
+    disk_usage: 85%
+
+# Compliance Configuration
+compliance:
+  lgpd_enabled: true
+  audit_logging: true
+  data_retention_days: 2555  # 7 years
+  encryption_at_rest: true
+  encryption_in_transit: true
+  access_logging: true
+  change_logging: true
+
+# Disaster Recovery Configuration
+disaster_recovery:
+  enabled: true
+  backup_frequency: daily
+  rto: 4h  # Recovery Time Objective
+  rpo: 1h  # Recovery Point Objective
+  multi_region: true
+  failover_automation: true

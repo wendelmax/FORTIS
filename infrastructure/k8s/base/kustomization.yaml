@@ -1,0 +1,106 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: fortis-voting-system
+  namespace: fortis
+
+resources:
+  - namespace.yaml
+  - configmaps.yaml
+  - secrets.yaml
+  - postgres.yaml
+  - redis.yaml
+  - backend.yaml
+  - frontend.yaml
+  - nginx.yaml
+  - monitoring.yaml
+  - ingress.yaml
+
+commonLabels:
+  app: fortis
+  version: "1.0.0"
+  environment: production
+  managed-by: kubernetes
+  part-of: fortis-ecosystem
+
+commonAnnotations:
+  contact: "fortis-team@tse.gov.br"
+  description: "Sistema FORTIS de Votação Eletrônica"
+  last-updated: "2025-12-15"
+
+patchesStrategicMerge:
+  - patches/backend-patch.yaml
+  - patches/frontend-patch.yaml
+  - patches/monitoring-patch.yaml
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: fortis-backend
+    path: patches/backend-json-patch.yaml
+
+configMapGenerator:
+  - name: fortis-version
+    literals:
+      - version=1.0.0
+      - build-date=2025-12-15
+      - git-commit=abc123def456
+
+secretGenerator:
+  - name: fortis-generated-secret
+    literals:
+      - api-key=generated-api-key-2025
+      - session-secret=generated-session-secret-2025
+
+images:
+  - name: fortis/backend
+    newTag: "1.0.0"
+  - name: fortis/frontend
+    newTag: "1.0.0"
+  - name: postgres
+    newTag: "15-alpine"
+  - name: redis
+    newTag: "7-alpine"
+  - name: nginx
+    newTag: "1.25-alpine"
+  - name: prom/prometheus
+    newTag: "latest"
+  - name: grafana/grafana
+    newTag: "latest"
+
+replicas:
+  - name: fortis-backend
+    count: 3
+  - name: fortis-frontend
+    count: 2
+  - name: fortis-nginx
+    count: 2
+  - name: fortis-prometheus
+    count: 1
+  - name: fortis-grafana
+    count: 1
+
+namespace: fortis
+
+namePrefix: fortis-
+
+nameSuffix: -prod
+
+patches:
+  - target:
+      kind: Deployment
+      name: fortis-backend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "2Gi"
+  - target:
+      kind: Deployment
+      name: fortis-frontend
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: "1Gi"

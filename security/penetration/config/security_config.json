@@ -1,0 +1,139 @@
+{
+  "targets": {
+    "api_url": "http://localhost:8080",
+    "domain": "fortis.gov.br",
+    "contract_path": "blockchain/contracts/FortisVoting.sol",
+    "mobile_path": "mobile",
+    "kubernetes_config": "~/.kube/config"
+  },
+  "tests": {
+    "owasp_zap": true,
+    "smart_contracts": true,
+    "crypto_security": true,
+    "infrastructure": true,
+    "mobile_security": true
+  },
+  "owasp_zap": {
+    "enabled": true,
+    "timeout": 1800,
+    "spider_depth": 5,
+    "active_scan_policy": "API-scan-minimal",
+    "context": "fortis-api",
+    "user": "admin",
+    "password": "admin"
+  },
+  "smart_contracts": {
+    "enabled": true,
+    "timeout": 600,
+    "tools": ["mythril", "slither", "echidna"],
+    "severity_threshold": "medium",
+    "exclude_functions": ["test_", "debug_"],
+    "include_functions": ["vote", "addCandidate", "removeCandidate", "startElection", "endElection"]
+  },
+  "crypto_security": {
+    "enabled": true,
+    "timeout": 300,
+    "test_algorithms": ["AES-256-GCM", "RSA-4096", "Argon2", "SHA-256"],
+    "test_endpoints": [
+      "/api/v1/crypto/encrypt",
+      "/api/v1/crypto/decrypt",
+      "/api/v1/crypto/hash",
+      "/api/v1/crypto/sign",
+      "/api/v1/zkp/generate-proof"
+    ],
+    "entropy_threshold": 7.5
+  },
+  "infrastructure": {
+    "enabled": true,
+    "timeout": 600,
+    "test_ports": [22, 80, 443, 8080, 8443, 3306, 5432, 6379, 9200],
+    "sensitive_ports": [21, 23, 135, 139, 445, 1433, 3389],
+    "security_headers": [
+      "X-Content-Type-Options",
+      "X-Frame-Options",
+      "X-XSS-Protection",
+      "Strict-Transport-Security",
+      "Content-Security-Policy",
+      "Referrer-Policy"
+    ],
+    "dns_records": ["A", "MX", "TXT", "CNAME"],
+    "ssl_ciphers": ["TLS_AES_256_GCM_SHA384", "TLS_CHACHA20_POLY1305_SHA256"]
+  },
+  "mobile_security": {
+    "enabled": true,
+    "timeout": 300,
+    "test_apk": true,
+    "test_ipa": true,
+    "test_biometric": true,
+    "test_certificate_pinning": true,
+    "test_secure_storage": true,
+    "test_network_security": true,
+    "test_code_obfuscation": true
+  },
+  "output": {
+    "reports_dir": "security/penetration/reports",
+    "logs_dir": "security/penetration/logs",
+    "formats": ["json", "html", "pdf"],
+    "include_screenshots": true,
+    "include_logs": true
+  },
+  "notifications": {
+    "enabled": true,
+    "email": {
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "security@fortis.gov.br",
+      "password": "your_password",
+      "to": ["admin@fortis.gov.br", "security@fortis.gov.br"]
+    },
+    "slack": {
+      "webhook_url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
+      "channel": "#security-alerts"
+    }
+  },
+  "scheduling": {
+    "enabled": true,
+    "cron": "0 2 * * *",
+    "timezone": "America/Sao_Paulo",
+    "retry_failed": true,
+    "max_retries": 3
+  },
+  "compliance": {
+    "standards": ["OWASP", "NIST", "ISO27001", "LGPD"],
+    "severity_mapping": {
+      "critical": "P0",
+      "high": "P1",
+      "medium": "P2",
+      "low": "P3",
+      "informational": "P4"
+    },
+    "remediation_time": {
+      "critical": "24h",
+      "high": "72h",
+      "medium": "7d",
+      "low": "30d"
+    }
+  },
+  "exclusions": {
+    "urls": [
+      "http://localhost:8080/health",
+      "http://localhost:8080/metrics"
+    ],
+    "vulnerabilities": [
+      "CVE-2021-12345",
+      "CVE-2021-67890"
+    ],
+    "files": [
+      "*.test.js",
+      "*.spec.js",
+      "node_modules/**"
+    ]
+  },
+  "thresholds": {
+    "max_critical": 0,
+    "max_high": 5,
+    "max_medium": 20,
+    "max_low": 50,
+    "success_rate": 95.0
+  }
+}

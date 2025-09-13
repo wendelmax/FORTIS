@@ -1,0 +1,141 @@
+{
+  "states": [
+    {
+      "state": "SP",
+      "name": "São Paulo",
+      "votes": 500000,
+      "participation_rate": 85.2,
+      "population": 46000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 150000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 140000, "percentage": 28.0},
+        {"id": "cand_003", "votes": 120000, "percentage": 24.0},
+        {"id": "cand_004", "votes": 90000, "percentage": 18.0}
+      ]
+    },
+    {
+      "state": "RJ",
+      "name": "Rio de Janeiro",
+      "votes": 300000,
+      "participation_rate": 78.5,
+      "population": 17000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 90000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 85000, "percentage": 28.3},
+        {"id": "cand_003", "votes": 75000, "percentage": 25.0},
+        {"id": "cand_004", "votes": 50000, "percentage": 16.7}
+      ]
+    },
+    {
+      "state": "MG",
+      "name": "Minas Gerais",
+      "votes": 250000,
+      "participation_rate": 82.1,
+      "population": 21000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 75000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 70000, "percentage": 28.0},
+        {"id": "cand_003", "votes": 65000, "percentage": 26.0},
+        {"id": "cand_004", "votes": 40000, "percentage": 16.0}
+      ]
+    },
+    {
+      "state": "RS",
+      "name": "Rio Grande do Sul",
+      "votes": 200000,
+      "participation_rate": 79.3,
+      "population": 11000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 60000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 58000, "percentage": 29.0},
+        {"id": "cand_003", "votes": 52000, "percentage": 26.0},
+        {"id": "cand_004", "votes": 30000, "percentage": 15.0}
+      ]
+    },
+    {
+      "state": "PR",
+      "name": "Paraná",
+      "votes": 180000,
+      "participation_rate": 81.7,
+      "population": 11000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 54000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 50000, "percentage": 27.8},
+        {"id": "cand_003", "votes": 46000, "percentage": 25.6},
+        {"id": "cand_004", "votes": 30000, "percentage": 16.7}
+      ]
+    },
+    {
+      "state": "SC",
+      "name": "Santa Catarina",
+      "votes": 150000,
+      "participation_rate": 83.4,
+      "population": 7000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 45000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 42000, "percentage": 28.0},
+        {"id": "cand_003", "votes": 39000, "percentage": 26.0},
+        {"id": "cand_004", "votes": 24000, "percentage": 16.0}
+      ]
+    },
+    {
+      "state": "BA",
+      "name": "Bahia",
+      "votes": 140000,
+      "participation_rate": 76.8,
+      "population": 15000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 42000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 39000, "percentage": 27.9},
+        {"id": "cand_003", "votes": 36000, "percentage": 25.7},
+        {"id": "cand_004", "votes": 23000, "percentage": 16.4}
+      ]
+    },
+    {
+      "state": "GO",
+      "name": "Goiás",
+      "votes": 120000,
+      "participation_rate": 80.2,
+      "population": 7000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 36000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 34000, "percentage": 28.3},
+        {"id": "cand_003", "votes": 30000, "percentage": 25.0},
+        {"id": "cand_004", "votes": 20000, "percentage": 16.7}
+      ]
+    },
+    {
+      "state": "PE",
+      "name": "Pernambuco",
+      "votes": 100000,
+      "participation_rate": 77.9,
+      "population": 9000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 30000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 28000, "percentage": 28.0},
+        {"id": "cand_003", "votes": 26000, "percentage": 26.0},
+        {"id": "cand_004", "votes": 16000, "percentage": 16.0}
+      ]
+    },
+    {
+      "state": "CE",
+      "name": "Ceará",
+      "votes": 90000,
+      "participation_rate": 75.6,
+      "population": 9000000,
+      "candidates": [
+        {"id": "cand_001", "votes": 27000, "percentage": 30.0},
+        {"id": "cand_002", "votes": 25000, "percentage": 27.8},
+        {"id": "cand_003", "votes": 23000, "percentage": 25.6},
+        {"id": "cand_004", "votes": 15000, "percentage": 16.7}
+      ]
+    }
+  ],
+  "metadata": {
+    "generated_at": "2025-10-15T10:30:00Z",
+    "version": "1.0",
+    "total_states": 10,
+    "total_votes": 1940000,
+    "average_participation": 80.1
+  }
+}

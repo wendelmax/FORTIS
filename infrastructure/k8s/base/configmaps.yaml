@@ -1,0 +1,366 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortis-backend-config
+  namespace: fortis
+  labels:
+    app: fortis-backend
+    component: config
+data:
+  # Database Configuration
+  DATABASE_URL: "postgresql://fortis_user:fortis_password@fortis-postgres:5432/fortis_voting"
+  REDIS_URL: "redis://fortis-redis:6379"
+  
+  # API Configuration
+  API_HOST: "0.0.0.0"
+  API_PORT: "8080"
+  API_WORKERS: "4"
+  
+  # Security Configuration
+  JWT_SECRET: "fortis-jwt-secret-key-2025"
+  ENCRYPTION_KEY: "fortis-encryption-key-32-chars"
+  
+  # TSE Integration
+  TSE_BASE_URL: "https://api.tse.gov.br"
+  GOV_BR_BASE_URL: "https://sso.acesso.gov.br"
+  TSE_CLIENT_ID: "fortis-client-id"
+  TSE_CLIENT_SECRET: "fortis-client-secret"
+  TSE_REDIRECT_URI: "https://fortis.gov.br/auth/callback"
+  
+  # Blockchain Configuration
+  POLYGON_RPC_URL: "https://polygon-rpc.com"
+  POLYGON_CHAIN_ID: "137"
+  CONTRACT_ADDRESS: "0x1234567890123456789012345678901234567890"
+  
+  # Monitoring Configuration
+  LOG_LEVEL: "info"
+  METRICS_ENABLED: "true"
+  HEALTH_CHECK_ENABLED: "true"
+  
+  # Election Configuration
+  ELECTION_TIMEOUT: "3600"
+  VOTE_TIMEOUT: "300"
+  MAX_VOTES_PER_ELECTION: "1000000"
+  
+  # Audit Configuration
+  AUDIT_ENABLED: "true"
+  AUDIT_RETENTION_DAYS: "2555"  # 7 years
+  
+  # Feature Flags
+  ZKP_ENABLED: "true"
+  BIOMETRIC_AUTH_ENABLED: "true"
+  MOBILE_APP_ENABLED: "true"
+  ADMIN_DASHBOARD_ENABLED: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortis-frontend-config
+  namespace: fortis
+  labels:
+    app: fortis-frontend
+    component: config
+data:
+  # API Configuration
+  REACT_APP_API_URL: "https://api.fortis.gov.br"
+  REACT_APP_WS_URL: "wss://ws.fortis.gov.br"
+  
+  # TSE Integration
+  REACT_APP_TSE_BASE_URL: "https://api.tse.gov.br"
+  REACT_APP_GOV_BR_BASE_URL: "https://sso.acesso.gov.br"
+  REACT_APP_TSE_CLIENT_ID: "fortis-client-id"
+  
+  # Blockchain Configuration
+  REACT_APP_POLYGON_RPC_URL: "https://polygon-rpc.com"
+  REACT_APP_CONTRACT_ADDRESS: "0x1234567890123456789012345678901234567890"
+  
+  # UI Configuration
+  REACT_APP_THEME: "light"
+  REACT_APP_LANGUAGE: "pt-BR"
+  REACT_APP_TIMEZONE: "America/Sao_Paulo"
+  
+  # Feature Flags
+  REACT_APP_ZKP_ENABLED: "true"
+  REACT_APP_BIOMETRIC_ENABLED: "true"
+  REACT_APP_MOBILE_ENABLED: "true"
+  REACT_APP_ADMIN_ENABLED: "true"
+  
+  # Monitoring
+  REACT_APP_SENTRY_DSN: "https://sentry.fortis.gov.br"
+  REACT_APP_ANALYTICS_ID: "GA-XXXXXXXXX"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortis-mobile-config
+  namespace: fortis
+  labels:
+    app: fortis-mobile
+    component: config
+data:
+  # API Configuration
+  API_BASE_URL: "https://api.fortis.gov.br"
+  WS_BASE_URL: "wss://ws.fortis.gov.br"
+  
+  # TSE Integration
+  TSE_BASE_URL: "https://api.tse.gov.br"
+  GOV_BR_BASE_URL: "https://sso.acesso.gov.br"
+  TSE_CLIENT_ID: "fortis-mobile-client-id"
+  
+  # Blockchain Configuration
+  POLYGON_RPC_URL: "https://polygon-rpc.com"
+  CONTRACT_ADDRESS: "0x1234567890123456789012345678901234567890"
+  
+  # Mobile Configuration
+  APP_VERSION: "1.0.0"
+  MIN_APP_VERSION: "1.0.0"
+  UPDATE_URL: "https://play.google.com/store/apps/details?id=br.gov.tse.fortis"
+  
+  # Security Configuration
+  CERTIFICATE_PINNING: "true"
+  BIOMETRIC_AUTH: "true"
+  FACE_ID_ENABLED: "true"
+  FINGERPRINT_ENABLED: "true"
+  
+  # Feature Flags
+  ZKP_ENABLED: "true"
+  OFFLINE_MODE: "false"
+  DEBUG_MODE: "false"
+  
+  # Monitoring
+  SENTRY_DSN: "https://sentry.fortis.gov.br"
+  ANALYTICS_ID: "GA-XXXXXXXXX"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortis-monitoring-config
+  namespace: fortis
+  labels:
+    app: fortis-monitoring
+    component: config
+data:
+  # Prometheus Configuration
+  PROMETHEUS_RETENTION: "30d"
+  PROMETHEUS_STORAGE: "/prometheus"
+  PROMETHEUS_WAL_DIR: "/prometheus/wal"
+  
+  # Grafana Configuration
+  GRAFANA_ADMIN_USER: "admin"
+  GRAFANA_ADMIN_PASSWORD: "fortis-grafana-password"
+  GRAFANA_DATABASE_TYPE: "postgres"
+  GRAFANA_DATABASE_HOST: "fortis-postgres:5432"
+  GRAFANA_DATABASE_NAME: "grafana"
+  GRAFANA_DATABASE_USER: "grafana_user"
+  GRAFANA_DATABASE_PASSWORD: "grafana_password"
+  
+  # AlertManager Configuration
+  ALERTMANAGER_CONFIG_FILE: "/etc/alertmanager/alertmanager.yml"
+  ALERTMANAGER_STORAGE_PATH: "/alertmanager"
+  
+  # Logging Configuration
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  LOG_OUTPUT: "stdout"
+  
+  # Metrics Configuration
+  METRICS_ENABLED: "true"
+  METRICS_PATH: "/metrics"
+  METRICS_PORT: "9090"
+  
+  # Health Check Configuration
+  HEALTH_CHECK_ENABLED: "true"
+  HEALTH_CHECK_PATH: "/health"
+  HEALTH_CHECK_INTERVAL: "30s"
+  HEALTH_CHECK_TIMEOUT: "10s"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fortis-nginx-config
+  namespace: fortis
+  labels:
+    app: fortis-nginx
+    component: config
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+    
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+    
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        
+        # Logging
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+        
+        access_log /var/log/nginx/access.log main;
+        
+        # Performance
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        client_max_body_size 10M;
+        
+        # Gzip
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
+        
+        # Security Headers
+        add_header X-Frame-Options DENY;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' wss: https:;";
+        add_header Referrer-Policy "strict-origin-when-cross-origin";
+        
+        # Rate Limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=auth:10m rate=5r/s;
+        limit_req_zone $binary_remote_addr zone=voting:10m rate=1r/s;
+        
+        # Upstreams
+        upstream fortis_backend {
+            least_conn;
+            server fortis-backend:8080 max_fails=3 fail_timeout=30s;
+        }
+        
+        upstream fortis_frontend {
+            least_conn;
+            server fortis-frontend:3000 max_fails=3 fail_timeout=30s;
+        }
+        
+        # API Server
+        server {
+            listen 80;
+            server_name api.fortis.gov.br;
+            
+            # Redirect to HTTPS
+            return 301 https://$server_name$request_uri;
+        }
+        
+        server {
+            listen 443 ssl http2;
+            server_name api.fortis.gov.br;
+            
+            # SSL Configuration
+            ssl_certificate /etc/nginx/ssl/tls.crt;
+            ssl_certificate_key /etc/nginx/ssl/tls.key;
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+            ssl_prefer_server_ciphers off;
+            ssl_session_cache shared:SSL:10m;
+            ssl_session_timeout 10m;
+            
+            # API Routes
+            location /api/ {
+                limit_req zone=api burst=20 nodelay;
+                proxy_pass http://fortis_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_connect_timeout 30s;
+                proxy_send_timeout 30s;
+                proxy_read_timeout 30s;
+            }
+            
+            # Auth Routes
+            location /auth/ {
+                limit_req zone=auth burst=10 nodelay;
+                proxy_pass http://fortis_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            # Voting Routes
+            location /voting/ {
+                limit_req zone=voting burst=5 nodelay;
+                proxy_pass http://fortis_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            # Health Check
+            location /health {
+                proxy_pass http://fortis_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            
+            # Metrics
+            location /metrics {
+                proxy_pass http://fortis_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+        
+        # Frontend Server
+        server {
+            listen 80;
+            server_name fortis.gov.br;
+            
+            # Redirect to HTTPS
+            return 301 https://$server_name$request_uri;
+        }
+        
+        server {
+            listen 443 ssl http2;
+            server_name fortis.gov.br;
+            
+            # SSL Configuration
+            ssl_certificate /etc/nginx/ssl/tls.crt;
+            ssl_certificate_key /etc/nginx/ssl/tls.key;
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+            ssl_prefer_server_ciphers off;
+            ssl_session_cache shared:SSL:10m;
+            ssl_session_timeout 10m;
+            
+            # Frontend Routes
+            location / {
+                proxy_pass http://fortis_frontend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_connect_timeout 30s;
+                proxy_send_timeout 30s;
+                proxy_read_timeout 30s;
+            }
+            
+            # Static Assets
+            location /static/ {
+                proxy_pass http://fortis_frontend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+            }
+        }
+    }

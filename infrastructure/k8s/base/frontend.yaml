@@ -1,0 +1,289 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fortis-frontend
+  namespace: fortis
+  labels:
+    app: fortis-frontend
+    component: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fortis-frontend
+  template:
+    metadata:
+      labels:
+        app: fortis-frontend
+        component: web
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: frontend
+        image: fortis/frontend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: REACT_APP_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_API_URL
+        - name: REACT_APP_WS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_WS_URL
+        - name: REACT_APP_TSE_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_TSE_BASE_URL
+        - name: REACT_APP_GOV_BR_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_GOV_BR_BASE_URL
+        - name: REACT_APP_TSE_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_TSE_CLIENT_ID
+        - name: REACT_APP_POLYGON_RPC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_POLYGON_RPC_URL
+        - name: REACT_APP_CONTRACT_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_CONTRACT_ADDRESS
+        - name: REACT_APP_THEME
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_THEME
+        - name: REACT_APP_LANGUAGE
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_LANGUAGE
+        - name: REACT_APP_TIMEZONE
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_TIMEZONE
+        - name: REACT_APP_ZKP_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_ZKP_ENABLED
+        - name: REACT_APP_BIOMETRIC_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_BIOMETRIC_ENABLED
+        - name: REACT_APP_MOBILE_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_MOBILE_ENABLED
+        - name: REACT_APP_ADMIN_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_ADMIN_ENABLED
+        - name: REACT_APP_SENTRY_DSN
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_SENTRY_DSN
+        - name: REACT_APP_ANALYTICS_ID
+          valueFrom:
+            configMapKeyRef:
+              name: fortis-frontend-config
+              key: REACT_APP_ANALYTICS_ID
+        volumeMounts:
+        - name: frontend-config
+          mountPath: /app/config
+        - name: frontend-logs
+          mountPath: /app/logs
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: frontend-config
+        configMap:
+          name: fortis-frontend-config
+      - name: frontend-logs
+        emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - fortis-frontend
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fortis-frontend
+  namespace: fortis
+  labels:
+    app: fortis-frontend
+    component: web
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: fortis-frontend
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: fortis-frontend-hpa
+  namespace: fortis
+  labels:
+    app: fortis-frontend
+    component: autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: fortis-frontend
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 1
+        periodSeconds: 60
+      selectPolicy: Max
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: fortis-frontend-pdb
+  namespace: fortis
+  labels:
+    app: fortis-frontend
+    component: pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: fortis-frontend
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: fortis-frontend-netpol
+  namespace: fortis
+  labels:
+    app: fortis-frontend
+    component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: fortis-frontend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: fortis
+    - podSelector:
+        matchLabels:
+          app: fortis-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: fortis-backend
+    ports:
+    - protocol: TCP
+      port: 8080
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
