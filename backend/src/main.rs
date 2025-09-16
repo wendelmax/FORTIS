@@ -9,7 +9,6 @@ use std::env;
 use utoipa_swagger_ui::SwaggerUi;
 
 mod auth;
-mod blockchain;
 mod crypto;
 mod database;
 mod models;
@@ -21,6 +20,8 @@ mod validation;
 mod audit;
 mod storage;
 mod monitoring;
+mod transparency;
+mod consensus;
 // mod middleware;
 mod config;
 mod api_docs;
@@ -48,10 +49,12 @@ async fn main() -> std::io::Result<()> {
     let redis_client = redis::Client::open(config.redis.url.as_str())
         .expect("Failed to create Redis client");
     
-    // Inicializar blockchain
-    let blockchain_service = blockchain::BlockchainService::new(config.blockchain.clone());
-    blockchain_service.init().await
-        .expect("Failed to initialize blockchain");
+    // Inicializar serviços de transparência e consenso
+    let transparency_service = transparency::election_logs::ElectionTransparencyLog::new(&config);
+    let consensus_service = consensus::threshold_signatures::ThresholdSignatureSystem::new(
+        config.consensus.threshold_nodes.len(),
+        config.consensus.threshold_required,
+    );
     
     // Inicializar serviços
     let crypto_service = crypto::CryptoService::new(&config.security.encryption_key)
@@ -76,6 +79,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(redis_client.clone()))
             .app_data(web::Data::new(crypto_service.clone()))
             .app_data(web::Data::new(jwt_service.clone()))
+            .app_data(web::Data::new(transparency_service.clone()))
+            .app_data(web::Data::new(consensus_service.clone()))
             .service(
                 web::scope("/api/v1")
                     .configure(api::v1::configure)
