@@ -133,9 +133,9 @@ async fn ready_check() -> actix_web::Result<actix_web::HttpResponse> {
         "status": "ready",
         "service": "fortis-backend",
         "checks": {
-            "database": "ok",
-            "redis": "ok",
-            "blockchain": "ok"
+        "database": "ok",
+        "redis": "ok",
+        "transparency": "ok"
         }
     })))
 }
