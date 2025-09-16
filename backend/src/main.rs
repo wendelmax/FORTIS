@@ -20,6 +20,7 @@ mod zkp;
 mod validation;
 mod audit;
 mod storage;
+mod monitoring;
 // mod middleware;
 mod config;
 mod api_docs;
