@@ -86,13 +86,13 @@ impl TransparencySync {
         let log_hash = self.send_to_logs(&vote_data).await?;
 
         // Aguardar confirmação
-        let confirmed = self.wait_for_confirmation(&tx_hash).await?;
+        let confirmed = self.wait_for_confirmation(&log_hash).await?;
         if !confirmed {
-            return Err(anyhow::anyhow!("Transaction not confirmed"));
+            return Err(anyhow::anyhow!("Log not confirmed"));
         }
 
-        log::info!("Vote synced successfully: {}", tx_hash);
-        Ok(tx_hash)
+        log::info!("Vote synced successfully: {}", log_hash);
+        Ok(log_hash)
     }
 
     pub async fn sync_vote_by_id(&self, vote_id: Uuid) -> Result<String> {
@@ -119,32 +119,32 @@ impl TransparencySync {
         }))
     }
 
-    async fn send_transaction(&self, vote_data: &serde_json::Value) -> Result<String> {
-        log::debug!("Sending transaction to blockchain");
+    async fn send_to_logs(&self, vote_data: &serde_json::Value) -> Result<String> {
+        log::debug!("Sending to transparency logs");
 
-        // Em implementação real, enviaria transação real
+        // Em implementação real, enviaria para logs reais
         // Por enquanto, simula envio
-        let tx_hash = format!("0x{:x}", Uuid::new_v4().as_u128());
+        let log_hash = format!("log_{:x}", Uuid::new_v4().as_u128());
         
-        log::debug!("Transaction sent: {}", tx_hash);
-        Ok(tx_hash)
+        log::debug!("Log sent: {}", log_hash);
+        Ok(log_hash)
     }
 
-    async fn wait_for_confirmation(&self, tx_hash: &str) -> Result<bool> {
-        log::debug!("Waiting for transaction confirmation: {}", tx_hash);
+    async fn wait_for_confirmation(&self, log_hash: &str) -> Result<bool> {
+        log::debug!("Waiting for log confirmation: {}", log_hash);
 
         // Em implementação real, aguardaria confirmação real
         // Por enquanto, simula confirmação
         tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
         
-        log::debug!("Transaction confirmed: {}", tx_hash);
+        log::debug!("Log confirmed: {}", log_hash);
         Ok(true)
     }
 
     pub async fn get_vote_status(&self, vote_id: Uuid) -> Result<VoteStatus> {
         log::debug!("Getting vote status: {}", vote_id);
 
-        // Em implementação real, consultaria blockchain
+        // Em implementação real, consultaria logs transparentes
         // Por enquanto, simula status
         Ok(VoteStatus::Confirmed)
     }
@@ -152,7 +152,7 @@ impl TransparencySync {
     pub async fn get_election_results(&self, election_id: Uuid) -> Result<ElectionResults> {
         log::info!("Getting election results: {}", election_id);
 
-        // Em implementação real, consultaria blockchain
+        // Em implementação real, consultaria logs transparentes
         // Por enquanto, simula resultados
         Ok(ElectionResults {
             election_id,

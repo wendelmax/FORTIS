@@ -3,7 +3,7 @@
 
 ### 🎯 **Visão Geral**
 
-O FORTIS é um sistema de votação eletrônica brasileiro de nova geração que combina a familiaridade das urnas eletrônicas existentes com tecnologias avançadas de blockchain, inteligência artificial e transparência pública total.
+O FORTIS 3.0 é um sistema de votação eletrônica brasileiro de nova geração que combina a familiaridade das urnas eletrônicas existentes com tecnologias avançadas de **Computação Transparente**, inteligência artificial e transparência pública total.
 
 **Abordagem Pragmática**: Usando tecnologias comprovadas e disponíveis hoje, com uma arquitetura inovadora que posiciona o Brasil como líder em democracia digital.
 
@@ -23,9 +23,10 @@ O FORTIS é um sistema de votação eletrônica brasileiro de nova geração que
 - **Acessibilidade**: Suporte para PCDs e idosos
 - **Interface Conversacional**: Votação por voz
 
-### **3. Blockchain Híbrida Inteligente**
-- **Polygon (Ethereum L2)**: Custos baixos, alta performance
-- **IPFS**: Armazenamento imutável
+### **3. Computação Transparente**
+- **Logs Transparentes**: Auditoria matemática
+- **Threshold Signatures**: Consenso sem blockchain
+- **DHT + IPFS**: Armazenamento distribuído
 - **Smart Contracts**: Automação segura
 - **Auditoria Pública**: Transparência total
 
@@ -38,7 +39,7 @@ O FORTIS é um sistema de votação eletrônica brasileiro de nova geração que
 - **27 Nós TSE**: Um por estado brasileiro
 - **Urnas Transacionais**: 400.000 urnas integradas
 - **Camada Pública**: API gratuita para auditoria
-- **Blockchain Híbrida**: Transparência + Privacidade
+- **Computação Transparente**: Transparência + Privacidade
 - **IA Conversacional**: Interface inteligente
 - **Criptografia Avançada**: Zero-Knowledge Proofs
 
@@ -46,7 +47,7 @@ O FORTIS é um sistema de votação eletrônica brasileiro de nova geração que
 
 - **Backend**: Rust + Actix-Web
 - **Frontend**: React + TypeScript
-- **Blockchain**: Polygon (Ethereum L2)
+- **Computação Transparente**: Logs + Threshold Signatures
 - **IA**: GPT-4 + TensorFlow
 - **Criptografia**: AES-256 + ZK Proofs
 - **Infraestrutura**: Kubernetes + AWS
@@ -105,7 +106,7 @@ O FORTIS é um sistema de votação eletrônica brasileiro de nova geração que
 - [ ] Interface administrativa
 - [ ] Integração com urna piloto
 
-### **Fase 2: IA e Blockchain (3 meses)**
+### **Fase 2: IA e Computação Transparente (3 meses)**
 - [ ] Assistente eleitoral
 - [ ] Zero-Knowledge Proofs
 - [ ] Smart contracts
@@ -158,7 +159,7 @@ As urnas eletrônicas existentes se tornam **pontos transacionais** do FORTIS:
 
 1. **Hardware Híbrido**: Mantém hardware atual + novos módulos
 2. **Autenticação Biométrica**: Digital + Facial + Voz
-3. **Sincronização em Tempo Real**: Online/offline com blockchain
+3. **Sincronização em Tempo Real**: Online/offline com logs transparentes
 4. **Controle de Tempo Rigoroso**: Início e fim exatos da votação
 5. **Auditoria Completa**: Logs imutáveis e verificáveis
 
@@ -176,7 +177,7 @@ As urnas eletrônicas existentes se tornam **pontos transacionais** do FORTIS:
    ↓
 6. Criptografia e assinatura digital
    ↓
-7. Sincronização com blockchain
+7. Sincronização com logs transparentes
    ↓
 8. Comprovante de votação
 ```
@@ -187,7 +188,7 @@ As urnas eletrônicas existentes se tornam **pontos transacionais** do FORTIS:
 
 ### **Especificações Detalhadas**
 - **[APIs REST](apis/README.md)** - Endpoints completos com OpenAPI
-- **[Smart Contracts](blockchain/README.md)** - Contratos Solidity para Polygon
+- **[Computação Transparente](../../FORTIS_3.0_ARCHITECTURE.md)** - Logs transparentes e threshold signatures
 - **[Infraestrutura](infraestrutura/README.md)** - Configurações Kubernetes
 - **[Integração TSE](integracao-tse/README.md)** - TSE e Gov.br
 - **[Arquitetura](arquitetura/README.md)** - Visão técnica completa
