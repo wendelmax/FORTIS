@@ -1,19 +1,19 @@
-# FORTIS
+# FORTIS 3.0
 - Índice da Documentação
 
-## Sistema de Votação Eletrônica Brasileiro
+## Sistema de Votação Eletrônica Brasileiro - Computação Transparente
 
-### **Navegação Rápida** Este índice organiza toda a documentação técnica do FORTIS para facilitar a navegação e consulta. ---
+### **Navegação Rápida** Este índice organiza toda a documentação técnica do FORTIS 3.0 para facilitar a navegação e consulta. ---
 
 ## **Documentação Principal**
 
 ### **Visão Geral do Sistema**
-- **[Big Picture](./FORTIS_BIG_PICTURE.md)**
-- Visão completa da arquitetura e componentes
-- **[Organização Completa](./ORGANIZACAO_COMPLETA.md)**
-- Estrutura do projeto e organização
-- **[Análise Inicial](./ANALISE_INICIAL_FORTIS.md)**
-- Análise técnica inicial do sistema ---
+- **[FORTIS 3.0 Big Picture](../../FORTIS_3.0_BIG_PICTURE.md)**
+- Visão completa da arquitetura sem blockchain
+- **[FORTIS 3.0 Architecture](../../FORTIS_3.0_ARCHITECTURE.md)**
+- Arquitetura técnica detalhada
+- **[Artigo Acadêmico](../../artigo/FORTIS_3.0_Transparent_Computing_Architecture.md)**
+- Documentação científica completa ---
 
 ## **APIs e Integração**
 
@@ -59,15 +59,19 @@
 - **[ Screens](../mobile/src/screens/)**
 - Telas do aplicativo ---
 
-## **Blockchain e Smart Contracts**
+## **Computação Transparente**
 
-### **Contratos Inteligentes**
-- **[ Blockchain README](../blockchain/README.md)**
-- Documentação da blockchain
-- **[ FortisVoting.sol](../blockchain/contracts/FortisVoting.sol)**
-- Contrato principal
-- **[ FortisGovernance.sol](../blockchain/contracts/FortisGovernance.sol)**
-- Governança
+### **Logs Transparentes**
+- **[Transparency Service](../../backend/src/transparency/)**
+- Sistema de logs transparentes
+- **[Election Logs](../../backend/src/transparency/election_logs.rs)**
+- Logs específicos para eleições
+
+### **Assinaturas de Limiar**
+- **[Consensus Service](../../backend/src/consensus/)**
+- Sistema de consenso sem blockchain
+- **[Threshold Signatures](../../backend/src/consensus/threshold_signatures.rs)**
+- Assinaturas de limiar
 
 ### **Zero-Knowledge Proofs**
 - **[ ZKP README](../backend/src/zkp/README.md)**
@@ -162,8 +166,8 @@
 - Tutorial do app mobile
 - **[ Web App Tutorial](./TUTORIAL_WEB.md)**
 - Tutorial da aplicação web
-- **[ Blockchain Tutorial](./TUTORIAL_BLOCKCHAIN.md)**
-- Tutorial de blockchain ---
+- **[ Computação Transparente Tutorial](./TUTORIAL_TRANSPARENT_COMPUTING.md)**
+- Tutorial de computação transparente ---
 
 ## **Métricas e Performance**
 
@@ -209,13 +213,13 @@
 
 ### **Fase Embrionária
 - Desenvolvimento Conceitual**
-- **Backend**: Arquitetura definida
+- **Backend**: Arquitetura FORTIS 3.0 implementada
 - **Frontend**: Conceito definido
 - **Mobile**: Planejamento inicial
-- **Blockchain**: Arquitetura definida
+- **Computação Transparente**: Arquitetura implementada
 - **IA/Analytics**: Conceito com Ollama + Llama3.2
 - **Infraestrutura**: Arquitetura definida
-- **Documentação**: 100% Conceitual
+- **Documentação**: 100% Atualizada para FORTIS 3.0
 
 ### **Próximos Passos** 1. **Validação Conceitual**
 - Aprovação com TSE 2. **Desenvolvimento de MVP**
