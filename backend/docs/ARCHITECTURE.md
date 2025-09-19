@@ -1,8 +1,8 @@
-# FORTIS Backend - Arquitetura
+# FORTIS 3.0 Backend - Arquitetura
 
 ## Visão Geral
 
-O FORTIS Backend é um sistema distribuído de alta disponibilidade desenvolvido em Rust, projetado para garantir a segurança, transparência e integridade do processo eleitoral brasileiro.
+O FORTIS 3.0 Backend é um sistema distribuído de alta disponibilidade desenvolvido em Rust, projetado para garantir a segurança, transparência e integridade do processo eleitoral brasileiro através de **Computação Transparente**.
 
 ## Princípios Arquiteturais
 
@@ -42,8 +42,8 @@ O FORTIS Backend é um sistema distribuído de alta disponibilidade desenvolvido
 │  └─────────────┘  └─────────────┘  └─────────────┘            │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐            │
-│  │  PostgreSQL │  │    Redis     │  │  Blockchain │            │
-│  │  (Primary)  │  │   (Cache)    │  │  (Polygon)  │            │
+│  │  PostgreSQL │  │    Redis     │  │Transparency │            │
+│  │  (Primary)  │  │   (Cache)    │  │    Logs     │            │
 │  └─────────────┘  └─────────────┘  └─────────────┘            │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -69,7 +69,7 @@ O FORTIS Backend é um sistema distribuído de alta disponibilidade desenvolvido
 - **Vote Casting**: Registro de votos
 - **Encryption**: Criptografia de votos
 - **Validation**: Validação de elegibilidade
-- **Blockchain**: Registro imutável
+- **Transparency**: Logs transparentes
 
 #### Election Service
 - **Election Management**: Gestão de eleições
@@ -109,7 +109,7 @@ O FORTIS Backend é um sistema distribuído de alta disponibilidade desenvolvido
 - **Rate Limiting**: Controle de taxa
 - **Pub/Sub**: Comunicação entre serviços
 
-#### Blockchain (Polygon)
+#### Transparency Logs
 - **Immutability**: Dados imutáveis
 - **Transparency**: Transparência pública
 - **Smart Contracts**: Lógica de negócio
@@ -126,14 +126,14 @@ Cliente → API Gateway → Auth Service → TSE Service → PostgreSQL
 
 ### 2. Fluxo de Votação
 ```
-Cliente → API Gateway → Vote Service → ZKP Service → Blockchain
+Cliente → API Gateway → Vote Service → ZKP Service → Transparency Logs
                 ↓              ↓
             PostgreSQL ← Redis (Cache)
 ```
 
 ### 3. Fluxo de Auditoria
 ```
-Auditor → API Gateway → Audit Service → PostgreSQL → Blockchain
+Auditor → API Gateway → Audit Service → PostgreSQL → Transparency Logs
                 ↓
             Relatórios → TSE Service
 ```
@@ -160,7 +160,7 @@ Auditor → API Gateway → Audit Service → PostgreSQL → Blockchain
 
 ### 4. Auditoria
 - **Immutable Logs**: Logs imutáveis
-- **Blockchain Hash**: Hash na blockchain
+- **Transparency Hash**: Hash nos logs transparentes
 - **Digital Signatures**: Assinaturas digitais
 - **Compliance**: Conformidade LGPD
 
@@ -302,7 +302,7 @@ Auditor → API Gateway → Audit Service → PostgreSQL → Blockchain
 ### Fase 2: Segurança (Em Andamento)
 - 🔄 Criptografia avançada
 - 🔄 Zero-Knowledge Proofs
-- 🔄 Blockchain integration
+- 🔄 Computação Transparente
 - 🔄 Auditoria completa
 
 ### Fase 3: Escalabilidade (Planejada)

@@ -6,7 +6,7 @@ pub mod auth;
 pub mod elections;
 pub mod votes;
 pub mod nodes;
-pub mod audit;
+// pub mod audit;
 pub mod zkp;
 pub mod tse;
 pub mod urnas;
@@ -30,10 +30,10 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             web::scope("/nodes")
                 .configure(nodes::configure)
         )
-        .service(
-            web::scope("/audit")
-                .configure(audit::config_audit_routes)
-        )
+        // .service(
+        //     web::scope("/audit")
+        //         .configure(audit::config_audit_routes)
+        // )
         .service(
             web::scope("/zkp")
                 .configure(zkp::config_zkp_routes)

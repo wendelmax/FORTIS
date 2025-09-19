@@ -5,9 +5,10 @@ pub struct Config {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
     pub redis: RedisConfig,
-    pub blockchain: BlockchainConfig,
     pub security: SecurityConfig,
     pub tse: TSEConfig,
+    pub transparency: TransparencyConfig,
+    pub consensus: ConsensusConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -27,9 +28,17 @@ pub struct RedisConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BlockchainConfig {
-    pub ethereum_rpc_url: String,
-    pub contract_address: String,
+pub struct TransparencyConfig {
+    pub log_storage_path: String,
+    pub merkle_tree_depth: u32,
+    pub verification_nodes: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ConsensusConfig {
+    pub threshold_nodes: Vec<String>,
+    pub threshold_required: usize,
+    pub signature_timeout: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -62,9 +71,23 @@ impl Config {
             redis: RedisConfig {
                 url: "redis://localhost:6379".to_string(),
             },
-            blockchain: BlockchainConfig {
-                ethereum_rpc_url: "https://mainnet.infura.io/v3/YOUR_PROJECT_ID".to_string(),
-                contract_address: "0x0000000000000000000000000000000000000000".to_string(),
+            transparency: TransparencyConfig {
+                log_storage_path: "./logs/transparent".to_string(),
+                merkle_tree_depth: 20,
+                verification_nodes: vec![
+                    "node1.tse.gov.br".to_string(),
+                    "node2.tse.gov.br".to_string(),
+                    "node3.tse.gov.br".to_string(),
+                ],
+            },
+            consensus: ConsensusConfig {
+                threshold_nodes: vec![
+                    "node1.tse.gov.br".to_string(),
+                    "node2.tse.gov.br".to_string(),
+                    "node3.tse.gov.br".to_string(),
+                ],
+                threshold_required: 2,
+                signature_timeout: 30,
             },
             security: SecurityConfig {
                 encryption_key: "fortis_encryption_key_32_chars_long".to_string(),

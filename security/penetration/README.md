@@ -7,7 +7,7 @@ Realizar testes de penetração abrangentes para identificar e corrigir vulnerab
 
 ### Escopo dos Testes
 - **Backend API**: Endpoints REST e autenticação
-- **Smart Contracts**: Vulnerabilidades de blockchain
+- **Computação Transparente**: Logs transparentes e threshold signatures
 - **Frontend Web**: Interface administrativa
 - **Mobile App**: Aplicativo de votação
 - **Infraestrutura**: Kubernetes e serviços

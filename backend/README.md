@@ -1,4 +1,4 @@
-# FORTIS Backend
+# FORTIS 3.0 Backend
 
 Sistema de Votação Eletrônica Brasileiro - Backend em Rust
 
@@ -8,7 +8,7 @@ Sistema de Votação Eletrônica Brasileiro - Backend em Rust
 - **Actix-Web**: Framework web assíncrono
 - **PostgreSQL**: Banco de dados principal
 - **Redis**: Cache e sessões
-- **Blockchain**: Integração com Polygon
+- **Computação Transparente**: Logs transparentes + Threshold signatures
 - **Criptografia**: AES-256, RSA-4096, Argon2
 - **Zero-Knowledge Proofs**: Privacidade dos votos
 
@@ -141,7 +141,7 @@ O FORTIS usa PostgreSQL com as seguintes tabelas principais:
 ### Auditoria
 
 - **Logs Imutáveis**: Todos os eventos são registrados
-- **Blockchain**: Hash das transações
+- **Logs Transparentes**: Hash das transações
 - **IPFS**: Armazenamento distribuído
 - **Merkle Trees**: Verificação de integridade
 
@@ -156,7 +156,7 @@ cargo test
 # Testes específicos
 cargo test auth
 cargo test crypto
-cargo test blockchain
+cargo test transparency
 
 # Testes de performance
 cargo test --release --test performance

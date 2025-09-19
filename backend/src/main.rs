@@ -6,10 +6,11 @@
 use actix_web::{web, App, HttpServer, middleware::Logger};
 use actix_cors::Cors;
 use std::env;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use utoipa_swagger_ui::SwaggerUi;
 
 mod auth;
-mod blockchain;
 mod crypto;
 mod database;
 mod models;
@@ -17,6 +18,12 @@ mod services;
 mod utils;
 mod api;
 mod zkp;
+mod validation;
+mod audit;
+mod storage;
+mod monitoring;
+mod transparency;
+mod consensus;
 // mod middleware;
 mod config;
 mod api_docs;
@@ -44,10 +51,22 @@ async fn main() -> std::io::Result<()> {
     let redis_client = redis::Client::open(config.redis.url.as_str())
         .expect("Failed to create Redis client");
     
-    // Inicializar blockchain
-    let blockchain_service = blockchain::BlockchainService::new(config.blockchain.clone());
-    blockchain_service.init().await
-        .expect("Failed to initialize blockchain");
+    // Inicializar serviços de transparência e consenso
+    let transparency_config = transparency::election_logs::LogConfig {
+        min_verifiers: 1,
+        max_verifiers: 10,
+        signature_threshold: 2,
+        retention_days: 30,
+        enable_audit_trail: true,
+        enable_performance_metrics: true,
+        max_entries_per_batch: 100,
+        verification_timeout_seconds: 30,
+    };
+    let consensus_service = consensus::threshold_signatures::ThresholdSignature::new(
+        "node_1".to_string(),
+        "initial_message".to_string(),
+        2,
+    );
     
     // Inicializar serviços
     let crypto_service = crypto::CryptoService::new(&config.security.encryption_key)
@@ -72,6 +91,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(redis_client.clone()))
             .app_data(web::Data::new(crypto_service.clone()))
             .app_data(web::Data::new(jwt_service.clone()))
+            .app_data(web::Data::new(Arc::new(RwLock::new(transparency::election_logs::ElectionTransparencyLog::new(transparency_config.clone())))))
+            .app_data(web::Data::new(consensus_service.clone()))
             .service(
                 web::scope("/api/v1")
                     .configure(api::v1::configure)
@@ -124,9 +145,9 @@ async fn ready_check() -> actix_web::Result<actix_web::HttpResponse> {
         "status": "ready",
         "service": "fortis-backend",
         "checks": {
-            "database": "ok",
-            "redis": "ok",
-            "blockchain": "ok"
+        "database": "ok",
+        "redis": "ok",
+        "transparency": "ok"
         }
     })))
 }

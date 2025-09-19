@@ -35,7 +35,7 @@ const HelpScreen: React.FC = () => {
     },
     {
       title: 'É seguro votar pelo celular?',
-      content: 'Sim! O FORTIS utiliza:\n• Criptografia de ponta a ponta\n• Blockchain para auditoria\n• Zero-Knowledge Proofs para privacidade\n• Autenticação biométrica\n• Verificação de integridade',
+      content: 'Sim! O FORTIS 3.0 utiliza:\n• Criptografia de ponta a ponta\n• Logs transparentes para auditoria\n• Zero-Knowledge Proofs para privacidade\n• Autenticação biométrica\n• Verificação de integridade',
     },
     {
       title: 'Posso votar mais de uma vez?',
@@ -51,7 +51,7 @@ const HelpScreen: React.FC = () => {
     },
     {
       title: 'Posso votar offline?',
-      content: 'Não. O FORTIS requer conexão com a internet para:\n• Verificar sua identidade\n• Sincronizar com a blockchain\n• Garantir a integridade do voto\n• Registrar o voto no sistema',
+      content: 'Não. O FORTIS 3.0 requer conexão com a internet para:\n• Verificar sua identidade\n• Sincronizar com logs transparentes\n• Garantir a integridade do voto\n• Registrar o voto no sistema',
     },
   ];
 
@@ -158,8 +158,8 @@ const HelpScreen: React.FC = () => {
             </View>
             
             <View style={styles.techItem}>
-              <Icon name="blockchain" size={20} color={colors.success} />
-              <Text style={styles.techText}>Blockchain Ethereum</Text>
+              <Icon name="security" size={20} color={colors.success} />
+              <Text style={styles.techText}>Logs Transparentes</Text>
             </View>
             
             <View style={styles.techItem}>
