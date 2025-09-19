@@ -7,7 +7,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use std::collections::HashMap;
-use crate::services::audit::blockchain_audit::{AuditEvent, IntegrityVerification};
+use crate::transparency::election_logs::AuditEvent;
 
 /// Serviço de verificação de auditoria
 pub struct AuditVerificationService {

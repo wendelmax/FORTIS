@@ -6,10 +6,10 @@ use crate::models::{
     VoteReceipt, VoteSyncStatus, UrnaAuthentication, AuthResult
 };
 use crate::services::urna::{
-    UrnaAuthService, UrnaSyncService, UrnaSecurityService, UrnaBlockchainService,
+    UrnaAuthService, UrnaSyncService, UrnaSecurityService,
     UrnaMonitoringService
 };
-use crate::config::BlockchainConfig;
+// use crate::config::BlockchainConfig;
 use anyhow::{Result, anyhow};
 use uuid::Uuid;
 use chrono::Utc;
@@ -18,17 +18,17 @@ pub struct UrnaService {
     pub auth_service: UrnaAuthService,
     pub sync_service: UrnaSyncService,
     pub security_service: UrnaSecurityService,
-    pub blockchain_service: UrnaBlockchainService,
+    // pub blockchain_service: UrnaBlockchainService, // Removido para FORTIS 3.0
     pub monitoring_service: UrnaMonitoringService,
 }
 
 impl UrnaService {
-    pub fn new(blockchain_contract_address: String, blockchain_network_id: u64, blockchain_config: BlockchainConfig) -> Self {
+    pub fn new() -> Self {
         Self {
             auth_service: UrnaAuthService::new(),
             sync_service: UrnaSyncService::new(),
             security_service: UrnaSecurityService::new(),
-            blockchain_service: UrnaBlockchainService::new(blockchain_contract_address, blockchain_network_id, blockchain_config),
+            // blockchain_service: UrnaBlockchainService::new(blockchain_contract_address, blockchain_network_id, blockchain_config), // Removido para FORTIS 3.0
             monitoring_service: UrnaMonitoringService::new(),
         }
     }
@@ -98,8 +98,9 @@ impl UrnaService {
         // Assinar voto
         let signature = self.security_service.sign_data(&encrypted_vote_data).await?;
 
-        // Registrar voto no blockchain
-        let blockchain_hash = self.blockchain_service.register_vote_on_blockchain(&vote).await?;
+        // Registrar voto no transparent log (FORTIS 3.0)
+        // let blockchain_hash = self.blockchain_service.register_vote_on_blockchain(&vote).await?; // Removido para FORTIS 3.0
+        let blockchain_hash = "transparent_log_hash".to_string(); // Placeholder para Transparent Computing
 
         // Sincronizar voto
         self.sync_service.queue_vote_for_sync(urna.id, vote.clone()).await?;

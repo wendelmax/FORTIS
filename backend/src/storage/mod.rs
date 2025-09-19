@@ -6,8 +6,8 @@
 //! completa desnecessária.
 
 pub mod distributed_storage;
-pub mod ipfs_client;
-pub mod dht_client;
-pub mod local_cache;
+// pub mod ipfs_client;
+// pub mod dht_client;
+// pub mod local_cache;
 
 pub use distributed_storage::*;

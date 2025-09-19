@@ -6,9 +6,11 @@
 //! camada de aplicação.
 
 use crate::crypto::CryptoService;
-use crate::models::{Vote, Voter, Election};
-use crate::services::tse::TSEValidator;
-use crate::services::biometric::BiometricValidator;
+use crate::models::Voter;
+use crate::storage::Vote;
+use crate::database::Election;
+// use crate::services::tse::TSEValidator;
+// use crate::services::biometric::BiometricValidator;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use anyhow::{Result, anyhow};
@@ -210,7 +212,7 @@ impl VoteValidator {
 
         // Gerar prova de unicidade
         proof.vote_uniqueness_proof = self.crypto_service
-            .generate_uniqueness_proof(&vote.nullifier, &vote.voter_id, &vote.election_id)
+            .generate_uniqueness_proof(&vote.nullifier, &vote.voter_id)
             .await?;
 
         Ok(true)
@@ -295,7 +297,7 @@ impl VoteValidator {
             .await?;
 
         proof.vote_uniqueness_proof = self.crypto_service
-            .generate_uniqueness_proof(&vote.nullifier, &vote.voter_id, &vote.election_id)
+            .generate_uniqueness_proof(&vote.nullifier, &vote.voter_id)
             .await?;
 
         proof.cryptographic_integrity_proof = self.crypto_service
@@ -305,10 +307,10 @@ impl VoteValidator {
         // Gerar Merkle root de todas as provas
         proof.merkle_root = self.crypto_service
             .generate_merkle_root(&[
-                &proof.voter_eligibility_proof,
-                &proof.biometric_verification_proof,
-                &proof.vote_uniqueness_proof,
-                &proof.cryptographic_integrity_proof,
+                proof.voter_eligibility_proof.clone(),
+                proof.biometric_verification_proof.clone(),
+                proof.vote_uniqueness_proof.clone(),
+                proof.cryptographic_integrity_proof.clone(),
             ])
             .await?;
 

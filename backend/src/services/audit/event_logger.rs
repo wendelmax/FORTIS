@@ -6,7 +6,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
 use std::collections::HashMap;
-use crate::services::audit::blockchain_audit::{AuditEvent, AuditEventType, AuditEventData};
+// use crate::transparency::election_logs::{AuditEvent, AuditEventType, AuditEventData};
 
 /// Logger de eventos de auditoria
 pub struct EventLogger {

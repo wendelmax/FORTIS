@@ -6,6 +6,8 @@
 use actix_web::{web, App, HttpServer, middleware::Logger};
 use actix_cors::Cors;
 use std::env;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use utoipa_swagger_ui::SwaggerUi;
 
 mod auth;
@@ -50,10 +52,20 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to create Redis client");
     
     // Inicializar serviços de transparência e consenso
-    let transparency_service = transparency::election_logs::ElectionTransparencyLog::new(&config);
-    let consensus_service = consensus::threshold_signatures::ThresholdSignatureSystem::new(
-        config.consensus.threshold_nodes.len(),
-        config.consensus.threshold_required,
+    let transparency_config = transparency::election_logs::LogConfig {
+        min_verifiers: 1,
+        max_verifiers: 10,
+        signature_threshold: 2,
+        retention_days: 30,
+        enable_audit_trail: true,
+        enable_performance_metrics: true,
+        max_entries_per_batch: 100,
+        verification_timeout_seconds: 30,
+    };
+    let consensus_service = consensus::threshold_signatures::ThresholdSignature::new(
+        "node_1".to_string(),
+        "initial_message".to_string(),
+        2,
     );
     
     // Inicializar serviços
@@ -79,7 +91,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(redis_client.clone()))
             .app_data(web::Data::new(crypto_service.clone()))
             .app_data(web::Data::new(jwt_service.clone()))
-            .app_data(web::Data::new(transparency_service.clone()))
+            .app_data(web::Data::new(Arc::new(RwLock::new(transparency::election_logs::ElectionTransparencyLog::new(transparency_config.clone())))))
             .app_data(web::Data::new(consensus_service.clone()))
             .service(
                 web::scope("/api/v1")

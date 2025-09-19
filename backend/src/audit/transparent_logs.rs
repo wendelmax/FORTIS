@@ -236,7 +236,7 @@ impl TransparentLog {
         complete_entry.merkle_proof = merkle_proof.clone();
 
         // Adicionar ao log
-        self.log_entries.push(complete_entry);
+        self.log_entries.push(complete_entry.clone());
         self.next_index += 1;
 
         Ok(InclusionProof {

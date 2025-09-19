@@ -6,7 +6,7 @@ authors = ["FORTIS Development Team <dev@fortis.gov.br>"]
 description = "FORTIS - Sistema de Votação Eletrônica Brasileiro - Backend"
 license = "MIT"
 repository = "https://github.com/fortis-gov/fortis"
-keywords = ["voting", "election", "blockchain", "security", "brazil"]
+keywords = ["voting", "election", "transparent-computing", "security", "brazil"]
 categories = ["authentication", "cryptography", "web-programming"]
 
 [dependencies]
@@ -70,11 +70,11 @@ thiserror = "1.0"
 validator = { version = "0.16", features = ["derive"] }
 
 # HTTP Client
-reqwest = { version = "0.11", features = ["json", "rustls-tls"] }
+reqwest = { version = "0.11", features = ["json", "rustls-tls", "multipart"] }
 
-# Blockchain
-web3 = "0.19"
-ethers = "2.0"
+# Blockchain - REMOVIDO para FORTIS 3.0 (Transparent Computing)
+# web3 = "0.19"
+# ethers = "2.0"
 
 # Zero-Knowledge Proofs (simplified for now)
 # ark-ff = "0.4"

@@ -18,6 +18,10 @@ mod tests {
             max_verifiers: 10,
             signature_threshold: 1,
             retention_days: 365,
+            enable_audit_trail: true,
+            enable_performance_metrics: true,
+            max_entries_per_batch: 100,
+            verification_timeout_seconds: 30,
         };
         
         let log = ElectionTransparencyLog::new(config);
@@ -36,6 +40,10 @@ mod tests {
             max_verifiers: 5,
             signature_threshold: 1,
             retention_days: 365,
+            enable_audit_trail: true,
+            enable_performance_metrics: true,
+            max_entries_per_batch: 100,
+            verification_timeout_seconds: 30,
         };
         
         let mut log = ElectionTransparencyLog::new(config);
@@ -482,5 +490,124 @@ mod tests {
                 // Pode ser aceitável dependendo da implementação
             }
         }
+    }
+
+    /// Testa métricas de performance
+    #[test]
+    fn test_performance_metrics() {
+        let config = LogConfig {
+            min_verifiers: 1,
+            max_verifiers: 5,
+            signature_threshold: 1,
+            retention_days: 365,
+            enable_audit_trail: true,
+            enable_performance_metrics: true,
+            max_entries_per_batch: 100,
+            verification_timeout_seconds: 30,
+        };
+        
+        let log = ElectionTransparencyLog::new(config);
+        let metrics = log.get_performance_metrics();
+        
+        assert_eq!(metrics.total_operations, 0);
+        assert_eq!(metrics.success_rate, 100.0);
+        assert_eq!(metrics.error_rate, 0.0);
+    }
+
+    /// Testa trilha de auditoria
+    #[test]
+    fn test_audit_trail() {
+        let config = LogConfig {
+            min_verifiers: 1,
+            max_verifiers: 5,
+            signature_threshold: 1,
+            retention_days: 365,
+            enable_audit_trail: true,
+            enable_performance_metrics: true,
+            max_entries_per_batch: 100,
+            verification_timeout_seconds: 30,
+        };
+        
+        let log = ElectionTransparencyLog::new(config);
+        let audit_trail = log.get_audit_trail();
+        
+        assert_eq!(audit_trail.len(), 0);
+    }
+
+    /// Testa busca de eventos
+    #[test]
+    fn test_event_search() {
+        let config = LogConfig {
+            min_verifiers: 1,
+            max_verifiers: 5,
+            signature_threshold: 1,
+            retention_days: 365,
+            enable_audit_trail: true,
+            enable_performance_metrics: true,
+            max_entries_per_batch: 100,
+            verification_timeout_seconds: 30,
+        };
+        
+        let mut log = ElectionTransparencyLog::new(config);
+        
+        // Adicionar verificador
+        let verifier = LogVerifier {
+            id: "verifier1".to_string(),
+            name: "Test Verifier".to_string(),
+            public_key: Ed25519KeyPair::generate(&mut OsRng).unwrap(),
+            is_active: true,
+            trust_level: 100,
+        };
+        log.add_verifier(verifier).unwrap();
+        
+        // Criar evento
+        let event = ElectionEvent {
+            id: "event1".to_string(),
+            event_type: ElectionEventType::VoteCast,
+            election_id: "election1".to_string(),
+            data: json!({"vote": "candidate1"}),
+            timestamp: Utc::now(),
+            source: "urna1".to_string(),
+        };
+        
+        // Adicionar evento
+        log.append_election_event(event).unwrap();
+        
+        // Buscar eventos
+        let criteria = SearchCriteria {
+            event_type: Some(ElectionEventType::VoteCast),
+            start_time: None,
+            end_time: None,
+            election_id: Some("election1".to_string()),
+            verification_status: None,
+        };
+        
+        let results = log.search_events(criteria).unwrap();
+        assert_eq!(results.len(), 1);
+    }
+
+    /// Testa exportação de log
+    #[test]
+    fn test_log_export() {
+        let config = LogConfig {
+            min_verifiers: 1,
+            max_verifiers: 5,
+            signature_threshold: 1,
+            retention_days: 365,
+            enable_audit_trail: true,
+            enable_performance_metrics: true,
+            max_entries_per_batch: 100,
+            verification_timeout_seconds: 30,
+        };
+        
+        let log = ElectionTransparencyLog::new(config);
+        
+        // Exportar em JSON
+        let json_data = log.export_for_audit(ExportFormat::Json).unwrap();
+        assert!(!json_data.is_empty());
+        
+        // Verificar se é JSON válido
+        let json_str = String::from_utf8(json_data).unwrap();
+        let _: serde_json::Value = serde_json::from_str(&json_str).unwrap();
     }
 }

@@ -31,7 +31,7 @@ pub struct SystemHealth {
 }
 
 /// Status de saúde
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum HealthStatus {
     Healthy,
     Degraded,
@@ -135,7 +135,7 @@ pub struct Alert {
 }
 
 /// Severidade do alerta
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AlertSeverity {
     Info,
     Warning,
@@ -390,7 +390,7 @@ impl AlertManager {
         
         // Enviar notificação
         for channel in &self.notification_channels {
-            if let Err(e) = channel.send_alert(&alert).await {
+            if let Err(e) = channel.send_alert(&alert) {
                 eprintln!("Failed to send alert notification: {}", e);
             }
         }

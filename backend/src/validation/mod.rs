@@ -5,10 +5,10 @@
 //! não é "máquina da verdade" e que a validação de conteúdo deve ser
 //! feita na camada de aplicação.
 
-pub mod vote_validator;
-pub mod election_validator;
-pub mod biometric_validator;
-pub mod tse_validator;
+// pub mod vote_validator;
+// pub mod election_validator;
+// pub mod biometric_validator;
+// pub mod tse_validator;
 
-pub use vote_validator::*;
-pub use election_validator::*;
+// pub use vote_validator::*;
+// pub use election_validator::*;

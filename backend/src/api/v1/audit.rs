@@ -7,7 +7,7 @@ use serde::Serialize;
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 
-use crate::services::audit::BlockchainAuditService;
+// use crate::services::audit::BlockchainAuditService;
 use crate::config::Config;
 
 /// Configura rotas de auditoria
@@ -54,7 +54,7 @@ async fn get_audit_events(
     config: web::Data<Config>,
     query: web::Query<HashMap<String, String>>,
 ) -> Result<HttpResponse> {
-    let audit_service = BlockchainAuditService::new(config.as_ref().clone());
+    // let audit_service = BlockchainAuditService::new(config.as_ref().clone());
     
     let start_date = query.get("start_date")
         .and_then(|s| DateTime::parse_from_rfc3339(s).ok())
@@ -77,17 +77,17 @@ async fn log_audit_event(
     config: web::Data<Config>,
     req: web::Json<HashMap<String, String>>,
 ) -> Result<HttpResponse> {
-    let audit_service = BlockchainAuditService::new(config.as_ref().clone());
+    // let audit_service = BlockchainAuditService::new(config.as_ref().clone());
     
     // Criar evento simplificado
-    let event = crate::services::audit::blockchain_audit::AuditEvent {
+    let event = crate::transparency::election_logs::AuditEvent {
         event_id: uuid::Uuid::new_v4().to_string(),
-        event_type: crate::services::audit::blockchain_audit::AuditEventType::AuditCreated,
         timestamp: Utc::now(),
+        event_type: crate::transparency::election_logs::AuditEventType::LogEntryCreated,
         actor: req.get("actor").unwrap_or(&"system".to_string()).clone(),
         action: req.get("action").unwrap_or(&"LOG_EVENT".to_string()).clone(),
         target: req.get("target").unwrap_or(&"audit_system".to_string()).clone(),
-        data: crate::services::audit::blockchain_audit::AuditEventData {
+        data: crate::transparency::election_logs::AuditEventData {
             election_id: req.get("election_id").cloned(),
             voter_id: req.get("voter_id").cloned(),
             node_id: req.get("node_id").cloned(),
@@ -101,6 +101,11 @@ async fn log_audit_event(
         signature: String::new(),
         block_number: None,
         transaction_hash: None,
+        // Campos adicionais para compatibilidade
+        id: uuid::Uuid::new_v4().to_string(),
+        user_id: req.get("user_id").cloned(),
+        details: serde_json::Value::Object(serde_json::Map::new()),
+        severity: crate::transparency::election_logs::AuditSeverity::Info,
     };
 
     match audit_service.log_audit_event(&event).await {
@@ -113,7 +118,7 @@ async fn log_audit_event(
 async fn get_audit_statistics(
     config: web::Data<Config>,
 ) -> Result<HttpResponse> {
-    let audit_service = BlockchainAuditService::new(config.as_ref().clone());
+    // let audit_service = BlockchainAuditService::new(config.as_ref().clone());
     
     match audit_service.get_audit_statistics().await {
         Ok(stats) => Ok(HttpResponse::Ok().json(ApiResponse::success(stats))),

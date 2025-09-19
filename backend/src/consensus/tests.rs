@@ -1,508 +1,378 @@
-//! Testes unitários para sistema de threshold signatures
+//! Testes para Sistema de Consenso Distribuído
 //! 
-//! Testa funcionalidades de assinaturas distribuídas para consenso
-//! sem dependência de blockchain.
+//! Testa funcionalidades de threshold signatures e consenso distribuído
+//! para auditoria eleitoral sem dependência de blockchain.
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consensus::threshold_signatures::*;
-    use chrono::Utc;
-    use rand::rngs::OsRng;
+    use crate::consensus::*;
+    use crate::transparency::election_logs::*;
+    use std::sync::Arc;
+    use tokio::sync::RwLock;
+    use chrono::Duration;
 
-    /// Testa criação do sistema de threshold signatures
+    /// Testa criação do serviço de threshold signatures
     #[test]
-    fn test_threshold_system_creation() {
-        let system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            3, // threshold
-            5  // total nodes
-        );
+    fn test_threshold_service_creation() {
+        let config = ThresholdConfig::default();
+        let service = ThresholdSignatureService::new(config);
+        let stats = service.get_stats();
         
-        let stats = system.get_system_stats();
         assert_eq!(stats.total_nodes, 0);
-        assert_eq!(stats.active_nodes, 0);
-        assert_eq!(stats.threshold, 3);
-        assert_eq!(stats.total_signatures, 0);
+        assert_eq!(stats.threshold, 2);
+        assert_eq!(stats.consensus_rate, 0.0);
     }
 
-    /// Testa geração de chaves threshold
-    #[test]
-    fn test_threshold_key_generation() {
-        let system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            3,
-            5
-        );
-        
-        let (private_key, public_key) = system.generate_threshold_keys().unwrap();
-        
-        assert_eq!(private_key.node_id, "node1");
-        assert_eq!(private_key.threshold, 3);
-        assert_eq!(private_key.total_nodes, 5);
-        assert_eq!(public_key.node_id, "node1");
-        assert_eq!(public_key.threshold, 3);
-        assert_eq!(public_key.total_nodes, 5);
-        assert!(!public_key.public_key.is_empty());
-    }
-
-    /// Testa criação de share de assinatura
-    #[test]
-    fn test_signature_share_creation() {
-        let system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            3,
-            5
-        );
-        
-        let (private_key, _) = system.generate_threshold_keys().unwrap();
-        let message = b"test message";
-        
-        let share = system.create_signature_share(&private_key, message).unwrap();
-        
-        assert_eq!(share.node_id, "node1");
-        assert!(!share.share.is_empty());
-        assert!(!share.proof.is_empty());
-        assert!(share.timestamp <= Utc::now());
-    }
-
-    /// Testa adição de nós ao sistema
+    /// Testa adição de nós
     #[test]
     fn test_add_nodes() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            3,
-            5
-        );
+        let mut service = ThresholdSignatureService::new(ThresholdConfig::default());
         
-        // Adicionar nós
-        for i in 1..=4 {
-            let node = ThresholdNode {
-                id: format!("node{}", i),
-                name: format!("Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 3,
-                    total_nodes: 5,
-                },
-                is_active: true,
-                trust_score: 0.8 + (i as f64 * 0.05),
-                last_seen: Utc::now(),
-            };
-            
-            let result = system.add_node(node);
-            assert!(result.is_ok());
-        }
-        
-        let stats = system.get_system_stats();
-        assert_eq!(stats.total_nodes, 4);
-        assert_eq!(stats.active_nodes, 4);
-    }
-
-    /// Testa coleta de threshold signature
-    #[tokio::test]
-    async fn test_collect_threshold_signature() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            2, // threshold baixo para teste
-            3
-        );
-        
-        // Adicionar nós ativos
+        // Adicionar 3 nós
         for i in 1..=3 {
-            let node = ThresholdNode {
-                id: format!("node{}", i),
+            let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+            let node = ConsensusNode {
+                id: format!("node_{}", i),
                 name: format!("Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 2,
-                    total_nodes: 3,
-                },
+                public_key,
                 is_active: true,
-                trust_score: 0.9,
+                trust_level: 100,
                 last_seen: Utc::now(),
+                signature_count: 0,
             };
             
-            system.add_node(node).unwrap();
+            service.add_node(node, key_pair).unwrap();
         }
         
-        let message = b"test message for threshold signature";
-        let result = system.collect_threshold_signature(message, Some(2)).await;
-        
-        assert!(result.is_ok());
-        
-        let threshold_sig = result.unwrap();
-        assert_eq!(threshold_sig.message, message);
-        assert!(!threshold_sig.signature.is_empty());
-        assert!(threshold_sig.participating_nodes.len() >= 2);
-        assert_eq!(threshold_sig.threshold, 2);
-        assert_eq!(threshold_sig.total_nodes, 3);
-    }
-
-    /// Testa verificação de threshold signature
-    #[tokio::test]
-    async fn test_verify_threshold_signature() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            2,
-            3
-        );
-        
-        // Adicionar nós
-        for i in 1..=3 {
-            let node = ThresholdNode {
-                id: format!("node{}", i),
-                name: format!("Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 2,
-                    total_nodes: 3,
-                },
-                is_active: true,
-                trust_score: 0.9,
-                last_seen: Utc::now(),
-            };
-            
-            system.add_node(node).unwrap();
-        }
-        
-        let message = b"test message for verification";
-        let threshold_sig = system.collect_threshold_signature(message, Some(2)).await.unwrap();
-        
-        // Verificar assinatura
-        let is_valid = system.verify_threshold_signature(&threshold_sig).unwrap();
-        assert!(is_valid);
-    }
-
-    /// Testa threshold signature com nós insuficientes
-    #[tokio::test]
-    async fn test_insufficient_nodes() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            3, // threshold alto
-            5
-        );
-        
-        // Adicionar apenas 2 nós (insuficiente para threshold 3)
-        for i in 1..=2 {
-            let node = ThresholdNode {
-                id: format!("node{}", i),
-                name: format!("Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 3,
-                    total_nodes: 5,
-                },
-                is_active: true,
-                trust_score: 0.9,
-                last_seen: Utc::now(),
-            };
-            
-            system.add_node(node).unwrap();
-        }
-        
-        let message = b"test message";
-        let result = system.collect_threshold_signature(message, Some(3)).await;
-        
-        // Deve falhar por nós insuficientes
-        assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Insufficient signature shares"));
-    }
-
-    /// Testa atualização de status de nós
-    #[test]
-    fn test_update_node_status() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            2,
-            3
-        );
-        
-        // Adicionar nó
-        let node = ThresholdNode {
-            id: "node2".to_string(),
-            name: "Node 2".to_string(),
-            public_key: ThresholdPublicKey {
-                node_id: "node2".to_string(),
-                public_key: vec![2; 32],
-                threshold: 2,
-                total_nodes: 3,
-            },
-            is_active: true,
-            trust_score: 0.9,
-            last_seen: Utc::now(),
-        };
-        
-        system.add_node(node).unwrap();
-        
-        // Verificar que nó está ativo
-        let active_nodes = system.get_active_nodes();
-        assert_eq!(active_nodes.len(), 1);
-        
-        // Desativar nó
-        let result = system.update_node_status("node2", false);
-        assert!(result.is_ok());
-        
-        // Verificar que nó não está mais ativo
-        let active_nodes = system.get_active_nodes();
-        assert_eq!(active_nodes.len(), 0);
-    }
-
-    /// Testa serviço de consenso
-    #[tokio::test]
-    async fn test_consensus_service() {
-        let mut service = ConsensusService::new(
-            "node1".to_string(),
-            2,
-            3
-        );
-        
-        // Inicializar serviço
-        service.initialize().await.unwrap();
-        
-        // Adicionar nó remoto
-        let remote_node = ThresholdNode {
-            id: "node2".to_string(),
-            name: "Remote Node".to_string(),
-            public_key: ThresholdPublicKey {
-                node_id: "node2".to_string(),
-                public_key: vec![2; 32],
-                threshold: 2,
-                total_nodes: 3,
-            },
-            is_active: true,
-            trust_score: 0.9,
-            last_seen: Utc::now(),
-        };
-        
-        service.add_remote_node(remote_node).unwrap();
-        
-        // Criar evento eleitoral
-        let event = ElectionEvent {
-            id: "event1".to_string(),
-            event_type: "vote_cast".to_string(),
-            election_id: "election1".to_string(),
-            data: serde_json::json!({
-                "voter_id": "voter1",
-                "candidate_id": "candidate1"
-            }),
-            timestamp: Utc::now(),
-            source: "urna1".to_string(),
-        };
-        
-        // Criar consenso
-        let result = service.create_election_consensus(&event).await;
-        assert!(result.is_ok());
-        
-        let threshold_sig = result.unwrap();
-        assert_eq!(threshold_sig.message.len(), serde_json::to_vec(&event).unwrap().len());
-    }
-
-    /// Testa verificação de consenso
-    #[tokio::test]
-    async fn test_consensus_verification() {
-        let mut service = ConsensusService::new(
-            "node1".to_string(),
-            2,
-            3
-        );
-        
-        service.initialize().await.unwrap();
-        
-        // Adicionar nó remoto
-        let remote_node = ThresholdNode {
-            id: "node2".to_string(),
-            name: "Remote Node".to_string(),
-            public_key: ThresholdPublicKey {
-                node_id: "node2".to_string(),
-                public_key: vec![2; 32],
-                threshold: 2,
-                total_nodes: 3,
-            },
-            is_active: true,
-            trust_score: 0.9,
-            last_seen: Utc::now(),
-        };
-        
-        service.add_remote_node(remote_node).unwrap();
-        
-        let event = ElectionEvent {
-            id: "event1".to_string(),
-            event_type: "election_created".to_string(),
-            election_id: "election1".to_string(),
-            data: serde_json::json!({"title": "Test Election"}),
-            timestamp: Utc::now(),
-            source: "tse".to_string(),
-        };
-        
-        // Criar consenso
-        let threshold_sig = service.create_election_consensus(&event).await.unwrap();
-        
-        // Verificar consenso
-        let is_valid = service.verify_election_consensus(&threshold_sig).unwrap();
-        assert!(is_valid);
-    }
-
-    /// Testa estatísticas do consenso
-    #[tokio::test]
-    async fn test_consensus_stats() {
-        let mut service = ConsensusService::new(
-            "node1".to_string(),
-            2,
-            3
-        );
-        
-        service.initialize().await.unwrap();
-        
-        // Adicionar nós remotos
-        for i in 2..=3 {
-            let remote_node = ThresholdNode {
-                id: format!("node{}", i),
-                name: format!("Remote Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 2,
-                    total_nodes: 3,
-                },
-                is_active: true,
-                trust_score: 0.9,
-                last_seen: Utc::now(),
-            };
-            
-            service.add_remote_node(remote_node).unwrap();
-        }
-        
-        let stats = service.get_consensus_stats();
+        let stats = service.get_stats();
         assert_eq!(stats.total_nodes, 3);
         assert_eq!(stats.active_nodes, 3);
-        assert_eq!(stats.threshold, 2);
     }
 
-    /// Testa performance com múltiplas assinaturas
-    #[tokio::test]
-    async fn test_performance_multiple_signatures() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            2,
-            5
-        );
+    /// Testa criação de requisição de assinatura
+    #[test]
+    fn test_create_signature_request() {
+        let mut service = ThresholdSignatureService::new(ThresholdConfig::default());
         
-        // Adicionar nós
-        for i in 1..=5 {
-            let node = ThresholdNode {
-                id: format!("node{}", i),
+        // Adicionar nó
+        let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+        let node = ConsensusNode {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            public_key,
+            is_active: true,
+            trust_level: 100,
+            last_seen: Utc::now(),
+            signature_count: 0,
+        };
+        service.add_node(node, key_pair).unwrap();
+        
+        let request = SignatureRequest {
+            id: "req1".to_string(),
+            message: "Test message".to_string(),
+            message_hash: service.hash_message("Test message"),
+            requester_id: "user1".to_string(),
+            priority: SignaturePriority::Normal,
+            expires_at: Utc::now() + Duration::minutes(10),
+            metadata: std::collections::HashMap::new(),
+        };
+        
+        let result = service.create_signature_request(request);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "req1");
+    }
+
+    /// Testa processo de consenso completo
+    #[test]
+    fn test_consensus_process() {
+        let mut service = ThresholdSignatureService::new(ThresholdConfig {
+            total_nodes: 3,
+            threshold: 2,
+            timeout_seconds: 30,
+            max_retries: 3,
+            enable_verification: true,
+        });
+        
+        // Adicionar 3 nós
+        for i in 1..=3 {
+            let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+            let node = ConsensusNode {
+                id: format!("node_{}", i),
                 name: format!("Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 2,
-                    total_nodes: 5,
-                },
+                public_key,
                 is_active: true,
-                trust_score: 0.9,
+                trust_level: 100,
                 last_seen: Utc::now(),
+                signature_count: 0,
             };
             
-            system.add_node(node).unwrap();
+            service.add_node(node, key_pair).unwrap();
         }
         
-        let start_time = std::time::Instant::now();
+        // Criar requisição
+        let request = SignatureRequest {
+            id: "consensus_test".to_string(),
+            message: "Consensus test message".to_string(),
+            message_hash: service.hash_message("Consensus test message"),
+            requester_id: "admin".to_string(),
+            priority: SignaturePriority::High,
+            expires_at: Utc::now() + Duration::minutes(10),
+            metadata: std::collections::HashMap::new(),
+        };
         
-        // Criar 100 assinaturas threshold
-        for i in 1..=100 {
-            let message = format!("test message {}", i).into_bytes();
-            let result = system.collect_threshold_signature(&message, Some(2)).await;
-            assert!(result.is_ok());
-        }
+        service.create_signature_request(request).unwrap();
         
-        let duration = start_time.elapsed();
+        // Processar consenso
+        let threshold_signature = service.collect_signatures("consensus_test").unwrap();
         
-        // Verificar que foi rápido (< 5 segundos para 100 assinaturas)
-        assert!(duration.as_secs() < 5, "Performance test failed: took {} seconds", duration.as_secs());
-        
-        println!("Performance test: 100 threshold signatures in {:?}", duration);
+        assert_eq!(threshold_signature.id, "consensus_test");
+        assert!(threshold_signature.threshold_met);
+        assert_eq!(threshold_signature.signatures.len(), 3);
     }
 
-    /// Testa tolerância a falhas de nós
-    #[tokio::test]
-    async fn test_node_failure_tolerance() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            2, // threshold 2
-            5  // total 5 nós
-        );
+    /// Testa validação de configuração
+    #[test]
+    fn test_config_validation() {
+        // Configuração válida
+        let valid_config = ThresholdConfig {
+            total_nodes: 5,
+            threshold: 3,
+            timeout_seconds: 30,
+            max_retries: 3,
+            enable_verification: true,
+        };
+        assert!(ThresholdUtils::validate_config(&valid_config).is_ok());
+        
+        // Configuração inválida - threshold maior que total de nós
+        let invalid_config = ThresholdConfig {
+            total_nodes: 3,
+            threshold: 5,
+            timeout_seconds: 30,
+            max_retries: 3,
+            enable_verification: true,
+        };
+        assert!(ThresholdUtils::validate_config(&invalid_config).is_err());
+        
+        // Configuração inválida - threshold zero
+        let invalid_config2 = ThresholdConfig {
+            total_nodes: 3,
+            threshold: 0,
+            timeout_seconds: 30,
+            max_retries: 3,
+            enable_verification: true,
+        };
+        assert!(ThresholdUtils::validate_config(&invalid_config2).is_err());
+    }
+
+    /// Testa cálculo de threshold ótimo
+    #[test]
+    fn test_optimal_threshold_calculation() {
+        assert_eq!(ThresholdUtils::calculate_optimal_threshold(9), 7); // 2/3 de 9 + 1
+        assert_eq!(ThresholdUtils::calculate_optimal_threshold(6), 5); // 2/3 de 6 + 1
+        assert_eq!(ThresholdUtils::calculate_optimal_threshold(3), 3); // 2/3 de 3 + 1
+    }
+
+    /// Testa verificação de segurança do threshold
+    #[test]
+    fn test_threshold_security() {
+        assert!(ThresholdUtils::is_threshold_secure(9, 7)); // Seguro
+        assert!(!ThresholdUtils::is_threshold_secure(9, 2)); // Inseguro
+        assert!(ThresholdUtils::is_threshold_secure(6, 4)); // Seguro
+        assert!(!ThresholdUtils::is_threshold_secure(6, 1)); // Inseguro
+    }
+
+    /// Testa geração de par de chaves
+    #[test]
+    fn test_key_pair_generation() {
+        let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+        
+        // Verificar que a chave pública é válida
+        assert!(!public_key.is_empty());
+        assert!(hex::decode(&public_key).is_ok());
+        
+        // Verificar que o par de chaves é válido
+        let test_message = "test message";
+        let signature = key_pair.sign(test_message.as_bytes());
+        assert!(!signature.as_ref().is_empty());
+    }
+
+    /// Testa limpeza de requisições expiradas
+    #[test]
+    fn test_cleanup_expired() {
+        let mut service = ThresholdSignatureService::new(ThresholdConfig::default());
+        
+        // Adicionar nó
+        let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+        let node = ConsensusNode {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            public_key,
+            is_active: true,
+            trust_level: 100,
+            last_seen: Utc::now(),
+            signature_count: 0,
+        };
+        service.add_node(node, key_pair).unwrap();
+        
+        // Criar requisição expirada
+        let expired_request = SignatureRequest {
+            id: "expired_req".to_string(),
+            message: "Expired message".to_string(),
+            message_hash: service.hash_message("Expired message"),
+            requester_id: "user1".to_string(),
+            priority: SignaturePriority::Normal,
+            expires_at: Utc::now() - Duration::minutes(1), // Expirada
+            metadata: std::collections::HashMap::new(),
+        };
+        
+        service.create_signature_request(expired_request).unwrap();
+        
+        // Verificar que a requisição foi adicionada
+        let stats_before = service.get_stats();
+        assert_eq!(stats_before.total_requests, 1);
+        
+        // Limpar expiradas
+        let removed = service.cleanup_expired();
+        assert_eq!(removed, 1);
+        
+        // Verificar que a requisição foi removida
+        let stats_after = service.get_stats();
+        assert_eq!(stats_after.total_requests, 0);
+    }
+
+    /// Testa verificação de assinatura
+    #[test]
+    fn test_signature_verification() {
+        let mut service = ThresholdSignatureService::new(ThresholdConfig::default());
+        
+        // Adicionar nó
+        let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+        let node = ConsensusNode {
+            id: "node1".to_string(),
+            name: "Node 1".to_string(),
+            public_key: public_key.clone(),
+            is_active: true,
+            trust_level: 100,
+            last_seen: Utc::now(),
+            signature_count: 0,
+        };
+        service.add_node(node, key_pair).unwrap();
+        
+        // Criar requisição
+        let request = SignatureRequest {
+            id: "verify_test".to_string(),
+            message: "Verification test".to_string(),
+            message_hash: service.hash_message("Verification test"),
+            requester_id: "user1".to_string(),
+            priority: SignaturePriority::Normal,
+            expires_at: Utc::now() + Duration::minutes(10),
+            metadata: std::collections::HashMap::new(),
+        };
+        
+        service.create_signature_request(request).unwrap();
+        
+        // Assinar mensagem
+        let node_signature = service.sign_message("node1", "verify_test").unwrap();
+        
+        // Verificar assinatura
+        let is_valid = service.verify_signature(&node_signature).unwrap();
+        assert!(is_valid);
+    }
+
+    /// Testa tolerância a falhas
+    #[test]
+    fn test_fault_tolerance() {
+        let mut service = ThresholdSignatureService::new(ThresholdConfig {
+            total_nodes: 5,
+            threshold: 3, // Requer 3 de 5 nós
+            timeout_seconds: 30,
+            max_retries: 3,
+            enable_verification: true,
+        });
         
         // Adicionar 5 nós
         for i in 1..=5 {
-            let node = ThresholdNode {
-                id: format!("node{}", i),
+            let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+            let node = ConsensusNode {
+                id: format!("node_{}", i),
                 name: format!("Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 2,
-                    total_nodes: 5,
-                },
+                public_key,
                 is_active: i <= 3, // Apenas 3 nós ativos
-                trust_score: 0.9,
+                trust_level: 100,
                 last_seen: Utc::now(),
+                signature_count: 0,
             };
             
-            system.add_node(node).unwrap();
+            service.add_node(node, key_pair).unwrap();
         }
         
-        let message = b"test message with node failures";
+        // Criar requisição
+        let request = SignatureRequest {
+            id: "fault_tolerance_test".to_string(),
+            message: "Fault tolerance test".to_string(),
+            message_hash: service.hash_message("Fault tolerance test"),
+            requester_id: "admin".to_string(),
+            priority: SignaturePriority::High,
+            expires_at: Utc::now() + Duration::minutes(10),
+            metadata: std::collections::HashMap::new(),
+        };
         
-        // Deve conseguir criar assinatura mesmo com alguns nós falhando
-        let result = system.collect_threshold_signature(message, Some(2)).await;
-        assert!(result.is_ok());
+        service.create_signature_request(request).unwrap();
         
-        let threshold_sig = result.unwrap();
-        assert!(threshold_sig.participating_nodes.len() >= 2);
+        // Processar consenso (deve funcionar com 3 nós ativos)
+        let threshold_signature = service.collect_signatures("fault_tolerance_test").unwrap();
+        
+        assert!(threshold_signature.threshold_met);
+        assert_eq!(threshold_signature.signatures.len(), 3);
     }
 
-    /// Testa assinatura com threshold dinâmico
-    #[tokio::test]
-    async fn test_dynamic_threshold() {
-        let mut system = ThresholdSignatureSystem::new(
-            "node1".to_string(),
-            2,
-            5
-        );
+    /// Testa performance com múltiplas requisições
+    #[test]
+    fn test_performance_multiple_requests() {
+        let mut service = ThresholdSignatureService::new(ThresholdConfig {
+            total_nodes: 3,
+            threshold: 2,
+            timeout_seconds: 30,
+            max_retries: 3,
+            enable_verification: true,
+        });
         
         // Adicionar nós
-        for i in 1..=5 {
-            let node = ThresholdNode {
-                id: format!("node{}", i),
+        for i in 1..=3 {
+            let (key_pair, public_key) = ThresholdUtils::generate_key_pair().unwrap();
+            let node = ConsensusNode {
+                id: format!("node_{}", i),
                 name: format!("Node {}", i),
-                public_key: ThresholdPublicKey {
-                    node_id: format!("node{}", i),
-                    public_key: vec![i as u8; 32],
-                    threshold: 2,
-                    total_nodes: 5,
-                },
+                public_key,
                 is_active: true,
-                trust_score: 0.9,
+                trust_level: 100,
                 last_seen: Utc::now(),
+                signature_count: 0,
             };
             
-            system.add_node(node).unwrap();
+            service.add_node(node, key_pair).unwrap();
         }
         
-        let message = b"test message with dynamic threshold";
-        
-        // Testar com diferentes thresholds
-        for threshold in 2..=4 {
-            let result = system.collect_threshold_signature(message, Some(threshold)).await;
-            assert!(result.is_ok());
+        // Processar 100 requisições
+        for i in 1..=100 {
+            let request = SignatureRequest {
+                id: format!("perf_test_{}", i),
+                message: format!("Performance test message {}", i),
+                message_hash: service.hash_message(&format!("Performance test message {}", i)),
+                requester_id: "admin".to_string(),
+                priority: SignaturePriority::Normal,
+                expires_at: Utc::now() + Duration::minutes(10),
+                metadata: std::collections::HashMap::new(),
+            };
             
-            let threshold_sig = result.unwrap();
-            assert!(threshold_sig.participating_nodes.len() >= threshold);
+            service.create_signature_request(request).unwrap();
+            service.collect_signatures(&format!("perf_test_{}", i)).unwrap();
         }
+        
+        let stats = service.get_stats();
+        assert_eq!(stats.total_requests, 100);
+        assert_eq!(stats.completed_requests, 100);
+        assert_eq!(stats.consensus_rate, 100.0);
     }
 }

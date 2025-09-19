@@ -5,8 +5,8 @@
 //! apropriadas para cada problema.
 
 pub mod transparent_logs;
-pub mod audit_service;
-pub mod verification;
+// pub mod audit_service;
+// pub mod verification;
 
 pub use transparent_logs::*;
-pub use audit_service::*;
+// pub use audit_service::*;
